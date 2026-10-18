@@ -1,34 +1,33 @@
 # Aduwebs — Adarsh Kumar Portfolio
 
-Personal portfolio website of **Adarsh Kumar** (product designer & creative developer), rebuilt with a refined design system and a live GitHub-powered backend-in-the-browser.
+Personal portfolio website of **Adarsh Kumar** (product designer & creative developer).
 
-## 🚀 Live preview
+## 🚀 The site
 
-- **New site:** open `index.html` (or deploy the repo root to GitHub Pages / Netlify / Vercel — it's fully static, no build step).
-- **Original designs (preserved):** `uploads/bestone.html`, `uploads/2nddesign.html`
+- **Main site:** `index.html` — the original **bestone** design, exactly as designed (intro loader, paper shell, live GitHub sections, memory game — everything untouched).
+- Deploy the repo root to GitHub Pages / Netlify / Vercel — fully static, no build step.
 
 ## 📁 Structure
 
 ```
 Aduwebs/
-├── index.html                  # The new website (entry point)
-├── assets/
-│   ├── css/styles.css          # Design system (light + dark, responsive)
-│   └── js/app.js               # All logic (theme, GitHub sync, game…)
-└── uploads/
-    ├── bestone.html            # Original upload — kept as-is
-    └── 2nddesign.html          # Original upload — kept as-is
+├── index.html                  # THE website — exact copy of bestone.html
+├── uploads/
+│   ├── bestone.html            # Original upload (source of index.html)
+│   └── 2nddesign.html          # Original upload — kept as-is
+├── v2.html                     # Optional alternate rebuild (not the main site)
+└── assets/                     # CSS/JS used only by v2.html
+    ├── css/styles.css
+    └── js/app.js
 ```
 
-## ✨ Features
+## ✨ Features (main site)
 
-- **Live GitHub sync** — profile, avatar, stats, selected work & full repo browser are fetched from the public GitHub API (`@Adarshukumar`) on every load, with graceful fallbacks if the API is unavailable.
-- **Selected Work** — filterable showcase (All / Web / Systems / Other) with generated gradient posters and a project detail modal.
-- **Repo browser** — instant search, auto-built language filter, load-more pagination, manual re-sync.
-- **Language mix bar** — computed live from all public repositories.
-- **Memory game** — 8-pair flip game with timer, move counter, personal-best tracking (`localStorage`) and a confetti win state.
-- **Design system** — light & dark themes (persisted, system-aware, no-flash), percentage preloader, page-wipe navigation, magnetic buttons, custom cursor, count-up stats, rotating role words, tilt profile card, scroll progress rail, live local-time clock.
-- **Quality** — semantic HTML, ARIA labels, keyboard-accessible dialogs & cards, `prefers-reduced-motion` support, SEO meta + JSON-LD, zero runtime dependencies (only Google Fonts + the GitHub API).
+- **Live GitHub sync** — profile, avatar, stats, selected work & full repo browser fetched from the public GitHub API (`@Adarshukumar`), with fallbacks if the API is unavailable.
+- **Selected Work** — filterable showcase (All / Web / Systems / Other) with gradient posters and a project detail modal.
+- **Repo browser** — search, language filter, load-more pagination, manual re-sync.
+- **Memory game** — 8-pair flip game with timer, move counter and best-score tracking.
+- **Design** — intro loader, light & dark themes, page-wipe navigation, magnetic buttons, custom cursor ring, scroll progress rail.
 
 ## 🧑‍💻 Contact
 
