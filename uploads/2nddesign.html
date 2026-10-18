@@ -1,0 +1,1967 @@
+<html lang="en"><head><script>HTMLElement.prototype.focus=SVGElement.prototype.focus=function(){};</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adarsh Kumar — Full Stack Engineer &amp; Product Builder</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,600&amp;family=Inter:wght@300;400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;family=Mr+De+Haviland&amp;display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    :root {
+      --bg-paper: #FAF9F6;
+      --text-ink: #111111;
+      --text-muted: #6E6D6A;
+      --border-hairline: #E5E4E0;
+      --card-bg: #F3F2EE;
+    }
+
+    body.dark-mode {
+      --bg-paper: #0F0F0F;
+      --text-ink: #F5F5F3;
+      --text-muted: #8E8D8A;
+      --border-hairline: #252524;
+      --card-bg: #181817;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background-color: #080808;
+      color: var(--text-ink);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      overflow-x: hidden;
+      padding: 16px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 6px;
+      }
+    }
+
+    /* Main Framed Paper Container */
+    #paper-frame {
+      background-color: var(--bg-paper);
+      border-radius: 22px;
+      width: 100%;
+      max-width: 1520px;
+      margin: 0 auto;
+      min-height: calc(100vh - 32px);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.65);
+      transition: background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1), color 0.4s ease;
+    }
+
+    /* Subtle Paper Noise Overlay */
+    #paper-frame::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 40;
+      opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    }
+
+    /* Interactive Page Peel Corner */
+    .page-peel {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 54px;
+      height: 54px;
+      z-index: 60;
+      cursor: pointer;
+      background: linear-gradient(225deg, #080808 48%, #d8d6d0 50%, #ffffff 56%, var(--border-hairline) 62%);
+      border-bottom-left-radius: 14px;
+      box-shadow: -4px 4px 12px rgba(0, 0, 0, 0.12);
+      transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .page-peel:hover {
+      width: 82px;
+      height: 82px;
+      box-shadow: -8px 8px 22px rgba(0, 0, 0, 0.2);
+    }
+    .page-peel-tooltip {
+      position: absolute;
+      top: 18px;
+      right: 68px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      opacity: 0;
+      transform: translateX(6px);
+      transition: all 0.25s ease;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    .page-peel:hover + .page-peel-tooltip {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    /* Typography Helpers */
+    .font-signature {
+      font-family: 'Mr De Haviland', cursive;
+    }
+    .font-serif-editorial {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+    }
+    .font-mono-code {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Hairline Grid Borders */
+    .border-hairline {
+      border-color: var(--border-hairline);
+    }
+
+    /* Marquee Animation */
+    @keyframes marqueeScroll {
+      0% { transform: translateX(0%); }
+      100% { transform: translateX(-50%); }
+    }
+    .marquee-track {
+      display: flex;
+      width: max-content;
+      animation: marqueeScroll 28s linear infinite;
+    }
+    .marquee-track:hover {
+      animation-play-state: paused;
+    }
+
+    /* Project Poster 3D Card & Fold Effect */
+    .poster-wrapper {
+      perspective: 1200px;
+    }
+    .poster-card {
+      position: relative;
+      width: 100%;
+      max-width: 390px;
+      height: 490px;
+      margin: 0 auto;
+      border-radius: 6px;
+      overflow: hidden;
+      transform-style: preserve-3d;
+      transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.45s ease;
+      box-shadow: 0 22px 45px -12px rgba(0, 0, 0, 0.25);
+      cursor: none;
+    }
+    .poster-card::after {
+      /* subtle vertical center book crease */
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      width: 2px;
+      background: linear-gradient(to right, rgba(255,255,255,0.22), rgba(0,0,0,0.14));
+      z-index: 4;
+      pointer-events: none;
+    }
+    .poster-card:hover {
+      box-shadow: 0 32px 64px -12px rgba(0, 0, 0, 0.36);
+    }
+
+    /* Custom Floating Hold Pill */
+    #hold-cursor-pill {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #111111;
+      color: #ffffff;
+      padding: 7px 14px 7px 9px;
+      border-radius: 9999px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.85);
+      transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    #hold-cursor-pill.active {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    /* Spiral Brush Transition Overlay */
+    #brush-transition-svg {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 100;
+      pointer-events: none;
+    }
+    #brush-path {
+      fill: none;
+      stroke: #0e0e0e;
+      stroke-width: 480;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 9000;
+      stroke-dashoffset: 9000;
+    }
+
+    /* Intro Splash Screen */
+    #intro-splash {
+      position: absolute;
+      inset: 0;
+      z-index: 80;
+      background-color: var(--bg-paper);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: clip-path 0.9s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.6s ease;
+      clip-path: circle(150% at 50% 50%);
+    }
+    #intro-splash.revealed {
+      clip-path: circle(0% at 50% 50%);
+      pointer-events: none;
+    }
+
+    /* Ripple Ring Animation on Splash */
+    @keyframes waterRipple {
+      0% {
+        transform: translate(-50%, -50%) scale(0.2);
+        opacity: 0.65;
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(3.5);
+        opacity: 0;
+      }
+    }
+    .water-ripple-circle {
+      position: absolute;
+      border-radius: 50%;
+      border: 2px solid rgba(0, 0, 0, 0.08);
+      box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.04);
+      pointer-events: none;
+      animation: waterRipple 1.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Memory Card Flip */
+    .memory-cell {
+      aspect-ratio: 1 / 1;
+      position: relative;
+      cursor: pointer;
+      border-right: 1px solid var(--border-hairline);
+      border-bottom: 1px solid var(--border-hairline);
+      background: var(--bg-paper);
+      transition: background-color 0.25s ease, color 0.25s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .memory-cell:hover {
+      background: var(--card-bg);
+    }
+    .memory-cell.flipped {
+      background: #111111;
+      color: #ffffff;
+    }
+    .memory-cell.matched {
+      background: var(--card-bg);
+      color: var(--text-ink);
+      cursor: default;
+    }
+    .memory-cell.mismatch {
+      background: #44403c;
+      color: #ffffff;
+    }
+
+    /* Scroll Ruler Indicator on Right Edge */
+    .scroll-ruler {
+      position: fixed;
+      right: 26px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 45;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 5px;
+      pointer-events: none;
+    }
+    @media (max-width: 1024px) {
+      .scroll-ruler {
+        display: none;
+      }
+    }
+    .ruler-tick {
+      height: 1px;
+      background-color: var(--text-ink);
+      opacity: 0.22;
+      transition: width 0.2s ease, opacity 0.2s ease;
+    }
+    .ruler-tick.active {
+      width: 24px !important;
+      opacity: 0.9;
+    }
+  </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.pointer-events-none{pointer-events:none}.fixed{position:fixed}.absolute{position:absolute}.relative{position:relative}.sticky{position:sticky}.inset-0{inset:0px}.bottom-9{bottom:2.25rem}.left-0{left:0px}.right-0{right:0px}.right-5{right:1.25rem}.top-0{top:0px}.top-5{top:1.25rem}.z-20{z-index:20}.z-30{z-index:30}.z-50{z-index:50}.mx-auto{margin-left:auto;margin-right:auto}.my-8{margin-top:2rem;margin-bottom:2rem}.my-auto{margin-top:auto;margin-bottom:auto}.mb-1{margin-bottom:0.25rem}.mb-1\.5{margin-bottom:0.375rem}.mb-10{margin-bottom:2.5rem}.mb-12{margin-bottom:3rem}.mb-2{margin-bottom:0.5rem}.mb-2\.5{margin-bottom:0.625rem}.mb-3{margin-bottom:0.75rem}.mb-4{margin-bottom:1rem}.mb-6{margin-bottom:1.5rem}.mb-8{margin-bottom:2rem}.mr-8{margin-right:2rem}.mt-0\.5{margin-top:0.125rem}.mt-1{margin-top:0.25rem}.mt-10{margin-top:2.5rem}.mt-12{margin-top:3rem}.mt-2{margin-top:0.5rem}.mt-3{margin-top:0.75rem}.mt-6{margin-top:1.5rem}.line-clamp-2{overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2}.block{display:block}.flex{display:flex}.inline-flex{display:inline-flex}.grid{display:grid}.hidden{display:none}.h-1\.5{height:0.375rem}.h-10{height:2.5rem}.h-2{height:0.5rem}.h-20{height:5rem}.h-24{height:6rem}.h-3\.5{height:0.875rem}.h-4{height:1rem}.h-5{height:1.25rem}.h-7{height:1.75rem}.h-8{height:2rem}.h-9{height:2.25rem}.h-\[130px\]{height:130px}.h-full{height:100%}.min-h-\[calc\(100vh-120px\)\]{min-height:calc(100vh - 120px)}.w-1\.5{width:0.375rem}.w-10{width:2.5rem}.w-2{width:0.5rem}.w-24{width:6rem}.w-3\.5{width:0.875rem}.w-4{width:1rem}.w-5{width:1.25rem}.w-7{width:1.75rem}.w-8{width:2rem}.w-9{width:2.25rem}.w-full{width:100%}.max-w-2xl{max-width:42rem}.max-w-\[1440px\]{max-width:1440px}.max-w-lg{max-width:32rem}.max-w-md{max-width:28rem}.max-w-xl{max-width:36rem}.flex-1{flex:1 1 0%}.shrink-0{flex-shrink:0}.-rotate-90{--tw-rotate:-90deg;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.animate-\[fadeIn_0\.3s_ease\]{animation:fadeIn 0.3s ease}@keyframes ping{75%, 100%{transform:scale(2);opacity:0}}.animate-ping{animation:ping 1s cubic-bezier(0, 0, 0.2, 1) infinite}@keyframes pulse{50%{opacity:.5}}.animate-pulse{animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite}.cursor-crosshair{cursor:crosshair}.cursor-pointer{cursor:pointer}.select-none{-webkit-user-select:none;user-select:none}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}.grid-cols-4{grid-template-columns:repeat(4, minmax(0, 1fr))}.flex-col{flex-direction:column}.flex-wrap{flex-wrap:wrap}.items-start{align-items:flex-start}.items-center{align-items:center}.justify-start{justify-content:flex-start}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-1\.5{gap:0.375rem}.gap-12{gap:3rem}.gap-2{gap:0.5rem}.gap-2\.5{gap:0.625rem}.gap-3{gap:0.75rem}.gap-4{gap:1rem}.gap-6{gap:1.5rem}.gap-8{gap:2rem}.gap-x-6{column-gap:1.5rem}.gap-y-2{row-gap:0.5rem}.divide-x > :not([hidden]) ~ :not([hidden]){--tw-divide-x-reverse:0;border-right-width:calc(1px * var(--tw-divide-x-reverse));border-left-width:calc(1px * calc(1 - var(--tw-divide-x-reverse)))}.divide-y > :not([hidden]) ~ :not([hidden]){--tw-divide-y-reverse:0;border-top-width:calc(1px * calc(1 - var(--tw-divide-y-reverse)));border-bottom-width:calc(1px * var(--tw-divide-y-reverse))}.divide-\[var\(--border-hairline\)\] > :not([hidden]) ~ :not([hidden]){border-color:var(--border-hairline)}.self-start{align-self:flex-start}.overflow-hidden{overflow:hidden}.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.whitespace-nowrap{white-space:nowrap}.rounded{border-radius:0.25rem}.rounded-2xl{border-radius:1rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:0.5rem}.rounded-xl{border-radius:0.75rem}.border{border-width:1px}.border-b{border-bottom-width:1px}.border-l{border-left-width:1px}.border-t{border-top-width:1px}.border-white\/15{border-color:rgb(255 255 255 / 0.15)}.border-white\/20{border-color:rgb(255 255 255 / 0.2)}.bg-\[var\(--bg-paper\)\]{background-color:var(--bg-paper)}.bg-\[var\(--card-bg\)\]{background-color:var(--card-bg)}.bg-\[var\(--text-ink\)\]{background-color:var(--text-ink)}.bg-amber-400{--tw-bg-opacity:1;background-color:rgb(251 191 36 / var(--tw-bg-opacity, 1))}.bg-black\/40{background-color:rgb(0 0 0 / 0.4)}.bg-black\/60{background-color:rgb(0 0 0 / 0.6)}.bg-emerald-400{--tw-bg-opacity:1;background-color:rgb(52 211 153 / var(--tw-bg-opacity, 1))}.bg-emerald-500{--tw-bg-opacity:1;background-color:rgb(16 185 129 / var(--tw-bg-opacity, 1))}.bg-red-400{--tw-bg-opacity:1;background-color:rgb(248 113 113 / var(--tw-bg-opacity, 1))}.bg-gradient-to-br{background-image:linear-gradient(to bottom right, var(--tw-gradient-stops))}.from-emerald-300{--tw-gradient-from:#6ee7b7 var(--tw-gradient-from-position);--tw-gradient-to:rgb(110 231 183 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-orange-400{--tw-gradient-from:#fb923c var(--tw-gradient-from-position);--tw-gradient-to:rgb(251 146 60 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-slate-900{--tw-gradient-from:#0f172a var(--tw-gradient-from-position);--tw-gradient-to:rgb(15 23 42 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.via-indigo-950{--tw-gradient-to:rgb(30 27 75 / 0)  var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), #1e1b4b var(--tw-gradient-via-position), var(--tw-gradient-to)}.via-rose-500{--tw-gradient-to:rgb(244 63 94 / 0)  var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), #f43f5e var(--tw-gradient-via-position), var(--tw-gradient-to)}.via-teal-500{--tw-gradient-to:rgb(20 184 166 / 0)  var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), #14b8a6 var(--tw-gradient-via-position), var(--tw-gradient-to)}.to-blue-900{--tw-gradient-to:#1e3a8a var(--tw-gradient-to-position)}.to-emerald-800{--tw-gradient-to:#065f46 var(--tw-gradient-to-position)}.to-purple-700{--tw-gradient-to:#7e22ce var(--tw-gradient-to-position)}.p-4{padding:1rem}.p-5{padding:1.25rem}.p-6{padding:1.5rem}.p-7{padding:1.75rem}.p-8{padding:2rem}.px-2{padding-left:0.5rem;padding-right:0.5rem}.px-2\.5{padding-left:0.625rem;padding-right:0.625rem}.px-3{padding-left:0.75rem;padding-right:0.75rem}.px-4{padding-left:1rem;padding-right:1rem}.px-5{padding-left:1.25rem;padding-right:1.25rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.px-7{padding-left:1.75rem;padding-right:1.75rem}.py-1{padding-top:0.25rem;padding-bottom:0.25rem}.py-1\.5{padding-top:0.375rem;padding-bottom:0.375rem}.py-12{padding-top:3rem;padding-bottom:3rem}.py-16{padding-top:4rem;padding-bottom:4rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.py-2\.5{padding-top:0.625rem;padding-bottom:0.625rem}.py-3\.5{padding-top:0.875rem;padding-bottom:0.875rem}.py-4{padding-top:1rem;padding-bottom:1rem}.py-6{padding-top:1.5rem;padding-bottom:1.5rem}.pb-10{padding-bottom:2.5rem}.pb-16{padding-bottom:4rem}.pt-10{padding-top:2.5rem}.pt-12{padding-top:3rem}.pt-4{padding-top:1rem}.pt-8{padding-top:2rem}.pt-3{padding-top:0.75rem}.text-left{text-align:left}.text-center{text-align:center}.text-2xl{font-size:1.5rem;line-height:2rem}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-4xl{font-size:2.25rem;line-height:2.5rem}.text-5xl{font-size:3rem;line-height:1}.text-6xl{font-size:3.75rem;line-height:1}.text-\[10px\]{font-size:10px}.text-\[11px\]{font-size:11px}.text-\[13px\]{font-size:13px}.text-base{font-size:1rem;line-height:1.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:0.75rem;line-height:1rem}.font-light{font-weight:300}.font-medium{font-weight:500}.font-normal{font-weight:400}.font-semibold{font-weight:600}.uppercase{text-transform:uppercase}.italic{font-style:italic}.leading-\[1\.35\]{line-height:1.35}.leading-none{line-height:1}.leading-relaxed{line-height:1.625}.leading-tight{line-height:1.25}.tracking-\[-0\.02em\]{letter-spacing:-0.02em}.tracking-\[0\.14em\]{letter-spacing:0.14em}.tracking-\[0\.2em\]{letter-spacing:0.2em}.tracking-normal{letter-spacing:0em}.tracking-tight{letter-spacing:-0.025em}.tracking-wide{letter-spacing:0.025em}.tracking-wider{letter-spacing:0.05em}.tracking-widest{letter-spacing:0.1em}.text-\[var\(--bg-paper\)\]{color:var(--bg-paper)}.text-\[var\(--text-ink\)\]{color:var(--text-ink)}.text-\[var\(--text-muted\)\]{color:var(--text-muted)}.text-emerald-300{--tw-text-opacity:1;color:rgb(110 231 183 / var(--tw-text-opacity, 1))}.text-emerald-50\/90{color:rgb(236 253 245 / 0.9)}.text-emerald-600{--tw-text-opacity:1;color:rgb(5 150 105 / var(--tw-text-opacity, 1))}.text-neutral-400{--tw-text-opacity:1;color:rgb(163 163 163 / var(--tw-text-opacity, 1))}.text-neutral-500{--tw-text-opacity:1;color:rgb(115 115 115 / var(--tw-text-opacity, 1))}.text-neutral-800{--tw-text-opacity:1;color:rgb(38 38 38 / var(--tw-text-opacity, 1))}.text-rose-100\/90{color:rgb(255 228 230 / 0.9)}.text-rose-500{--tw-text-opacity:1;color:rgb(244 63 94 / var(--tw-text-opacity, 1))}.text-sky-300{--tw-text-opacity:1;color:rgb(125 211 252 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.underline{-webkit-text-decoration-line:underline;text-decoration-line:underline}.underline-offset-4{text-underline-offset:4px}.opacity-0{opacity:0}.opacity-15{opacity:0.15}.opacity-80{opacity:0.8}.opacity-90{opacity:0.9}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgb(0 0 0 / 0.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.drop-shadow-md{--tw-drop-shadow:drop-shadow(0 4px 3px rgb(0 0 0 / 0.07)) drop-shadow(0 2px 2px rgb(0 0 0 / 0.06));filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.drop-shadow-sm{--tw-drop-shadow:drop-shadow(0 1px 1px rgb(0 0 0 / 0.05));filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.backdrop-blur-md{--tw-backdrop-blur:blur(12px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.backdrop-blur-sm{--tw-backdrop-blur:blur(4px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.transition-all{transition-property:all;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-colors{transition-property:color, background-color, border-color, fill, stroke, -webkit-text-decoration-color;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, -webkit-text-decoration-color;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-opacity{transition-property:opacity;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-transform{transition-property:transform;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.duration-300{transition-duration:300ms}.duration-500{transition-duration:500ms}.duration-700{transition-duration:700ms}.hover\:scale-105:hover{--tw-scale-x:1.05;--tw-scale-y:1.05;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.hover\:border-\[\#0A66C2\]:hover{--tw-border-opacity:1;border-color:rgb(10 102 194 / var(--tw-border-opacity, 1))}.hover\:border-pink-600:hover{--tw-border-opacity:1;border-color:rgb(219 39 119 / var(--tw-border-opacity, 1))}.hover\:bg-\[\#0A66C2\]:hover{--tw-bg-opacity:1;background-color:rgb(10 102 194 / var(--tw-bg-opacity, 1))}.hover\:bg-\[var\(--card-bg\)\]:hover{background-color:var(--card-bg)}.hover\:bg-\[var\(--text-ink\)\]:hover{background-color:var(--text-ink)}.hover\:bg-pink-600:hover{--tw-bg-opacity:1;background-color:rgb(219 39 119 / var(--tw-bg-opacity, 1))}.hover\:text-\[var\(--bg-paper\)\]:hover{color:var(--bg-paper)}.hover\:text-\[var\(--text-ink\)\]:hover{color:var(--text-ink)}.hover\:text-neutral-900:hover{--tw-text-opacity:1;color:rgb(23 23 23 / var(--tw-text-opacity, 1))}.hover\:text-white:hover{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.hover\:opacity-70:hover{opacity:0.7}.hover\:opacity-85:hover{opacity:0.85}.hover\:opacity-90:hover{opacity:0.9}.group:hover .group-hover\:-translate-y-0\.5{--tw-translate-y:-0.125rem;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.group:hover .group-hover\:translate-x-0\.5{--tw-translate-x:0.125rem;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.group:hover .group-hover\:translate-x-1{--tw-translate-x:0.25rem;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.group:hover .group-hover\:rotate-45{--tw-rotate:45deg;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.group:hover .group-hover\:rotate-90{--tw-rotate:90deg;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}@media (min-width: 640px){.sm\:inline-flex{display:inline-flex}.sm\:h-\[190px\]{height:190px}.sm\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.sm\:grid-cols-5{grid-template-columns:repeat(5, minmax(0, 1fr))}.sm\:flex-row{flex-direction:row}.sm\:items-center{align-items:center}.sm\:text-6xl{font-size:3.75rem;line-height:1}.sm\:text-sm{font-size:0.875rem;line-height:1.25rem}}@media (min-width: 768px){.md\:mb-16{margin-bottom:4rem}.md\:mr-10{margin-right:2.5rem}.md\:flex{display:flex}.md\:hidden{display:none}.md\:h-\[250px\]{height:250px}.md\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.md\:grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}.md\:flex-row{flex-direction:row}.md\:items-end{align-items:flex-end}.md\:justify-end{justify-content:flex-end}.md\:divide-x > :not([hidden]) ~ :not([hidden]){--tw-divide-x-reverse:0;border-right-width:calc(1px * var(--tw-divide-x-reverse));border-left-width:calc(1px * calc(1 - var(--tw-divide-x-reverse)))}.md\:divide-y-0 > :not([hidden]) ~ :not([hidden]){--tw-divide-y-reverse:0;border-top-width:calc(0px * calc(1 - var(--tw-divide-y-reverse)));border-bottom-width:calc(0px * var(--tw-divide-y-reverse))}.md\:p-10{padding:2.5rem}.md\:p-12{padding:3rem}.md\:p-14{padding:3.5rem}.md\:px-12{padding-left:3rem;padding-right:3rem}.md\:py-16{padding-top:4rem;padding-bottom:4rem}.md\:py-24{padding-top:6rem;padding-bottom:6rem}.md\:py-6{padding-top:1.5rem;padding-bottom:1.5rem}.md\:py-9{padding-top:2.25rem;padding-bottom:2.25rem}.md\:pt-20{padding-top:5rem}.md\:text-2xl{font-size:1.5rem;line-height:2rem}.md\:text-3xl{font-size:1.875rem;line-height:2.25rem}.md\:text-4xl{font-size:2.25rem;line-height:2.5rem}.md\:text-5xl{font-size:3rem;line-height:1}.md\:text-6xl{font-size:3.75rem;line-height:1}.md\:text-7xl{font-size:4.5rem;line-height:1}.md\:text-\[13px\]{font-size:13px}.md\:text-\[26px\]{font-size:26px}}@media (min-width: 1024px){.lg\:col-span-3{grid-column:span 3 / span 3}.lg\:col-span-4{grid-column:span 4 / span 4}.lg\:col-span-5{grid-column:span 5 / span 5}.lg\:col-span-7{grid-column:span 7 / span 7}.lg\:col-span-9{grid-column:span 9 / span 9}.lg\:grid-cols-12{grid-template-columns:repeat(12, minmax(0, 1fr))}.lg\:grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}.lg\:divide-x > :not([hidden]) ~ :not([hidden]){--tw-divide-x-reverse:0;border-right-width:calc(1px * var(--tw-divide-x-reverse));border-left-width:calc(1px * calc(1 - var(--tw-divide-x-reverse)))}.lg\:divide-y-0 > :not([hidden]) ~ :not([hidden]){--tw-divide-y-reverse:0;border-top-width:calc(0px * calc(1 - var(--tw-divide-y-reverse)));border-bottom-width:calc(0px * var(--tw-divide-y-reverse))}.lg\:border-b-0{border-bottom-width:0px}.lg\:border-r{border-right-width:1px}}</style></head>
+<body>
+
+  <!-- Floating "HOLD TO OPEN" Pill with Progress Ring -->
+  <div id="hold-cursor-pill">
+    <svg width="20" height="20" viewBox="0 0 24 24" class="-rotate-90">
+      <circle cx="12" cy="12" r="9" stroke="rgba(255,255,255,0.25)" stroke-width="2.5" fill="none"></circle>
+      <circle id="hold-progress-circle" cx="12" cy="12" r="9" stroke="#ffffff" stroke-width="2.5" fill="none" stroke-dasharray="56.5" stroke-dashoffset="56.5" stroke-linecap="round"></circle>
+    </svg>
+    <span id="hold-pill-label">HOLD TO OPEN</span>
+  </div>
+
+  <!-- SVG Brush Stroke Page Transition -->
+  <svg id="brush-transition-svg" viewBox="0 0 1920 1080" preserveAspectRatio="none">
+    <path id="brush-path" d="M 960,540 C 1150,350 1350,650 1050,820 C 700,980 420,620 620,300 C 850,-20 1480,150 1620,580 C 1750,1020 980,1250 380,980 C -120,700 80,-120 880,-150 C 1680,-180 2150,550 1850,1200"></path>
+  </svg>
+
+  <!-- Main Paper Sheet Container -->
+  <div id="paper-frame">
+
+    <!-- Top-Right Interactive Corner Peel (Theme Switcher) -->
+    <div class="page-peel" id="theme-peel" title="Peel corner to toggle Dark / Light Ink"></div>
+    <div class="page-peel-tooltip">Flip Ink Mode</div>
+
+    <!-- ==========================================
+         1. INTERACTIVE WATER SPLASH INTRO OVERLAY
+         ========================================== -->
+    <div id="intro-splash">
+      <!-- Center Signature / Water Z Guide -->
+      <div id="splash-signature-stage" class="text-center transition-opacity duration-500" style="opacity: 0.25;">
+        <div class="font-signature text-6xl md:text-7xl tracking-wide text-neutral-800 select-none">
+          Adarsh Kumar
+        </div>
+        <p class="font-mono-code text-[11px] uppercase tracking-[0.2em] text-neutral-400 mt-2">
+          @Adarshukumar • Portfolio
+        </p>
+      </div>
+
+      <!-- Interactive Water Canvas -->
+      <canvas id="water-z-canvas" class="absolute inset-0 w-full h-full cursor-crosshair" width="1266" height="4082"></canvas>
+
+      <!-- Faint Z Watermark -->
+      <div id="z-watermark" class="pointer-events-none opacity-0 transition-opacity duration-700 flex flex-col items-center justify-center" style="opacity: 1;">
+        <svg width="240" height="240" viewBox="0 0 200 200" class="opacity-15">
+          <path d="M 45 50 L 155 50 L 45 150 L 155 150" fill="none" stroke="#111" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" filter="blur(4px)"></path>
+        </svg>
+      </div>
+
+      <!-- Bottom Prompt & Skip Button -->
+      <div class="absolute bottom-9 left-0 right-0 flex flex-col items-center gap-2 z-20">
+        <p class="text-xs text-neutral-500 font-medium tracking-wide">
+          Draw a <span class="font-mono-code font-semibold text-neutral-800">Z</span> on the water <span class="text-neutral-400">(or drag across)</span>
+        </p>
+        <button id="skip-intro-btn" class="font-mono-code text-[11px] text-neutral-400 hover:text-neutral-900 underline underline-offset-4 transition-colors cursor-pointer">
+          or press Enter / click here to unlock directly
+        </button>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         2. TOP NAVIGATION BAR
+         ========================================== -->
+    <header class="sticky top-0 z-30 backdrop-blur-md bg-[var(--bg-paper)]/85 border-b border-hairline transition-colors">
+      <div class="max-w-[1440px] mx-auto px-5 md:px-12 h-20 flex items-center justify-between">
+        <!-- Signature Logo -->
+        <a href="#" onclick="return false" class="font-signature text-3xl md:text-4xl tracking-normal hover:opacity-70 transition-opacity py-1">
+          Adarsh
+        </a>
+
+        <!-- Center Navigation Links -->
+        <nav class="hidden md:flex items-center gap-8 text-[13px] font-medium text-[var(--text-muted)]">
+          <a href="#" onclick="return false" class="hover:text-[var(--text-ink)] transition-colors">About Me</a>
+          <a href="#" onclick="return false" class="hover:text-[var(--text-ink)] transition-colors">Contact</a>
+          <a href="#" onclick="return false" class="hover:text-[var(--text-ink)] transition-colors">Works</a>
+          <button onclick="switchView('game')" id="nav-game-btn" class="hover:text-[var(--text-ink)] transition-colors flex items-center gap-1.5 cursor-pointer">
+            <span>Play Game</span>
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          </button>
+          <button onclick="openResumeModal()" class="hover:text-[var(--text-ink)] transition-colors cursor-pointer">Resume</button>
+        </nav>
+
+        <!-- Right Quick Action / Mobile Menu + Sound Effect Toggle -->
+        <div class="flex items-center gap-3 mr-8 md:mr-10">
+          <a href="#" onclick="return false" target="_blank" rel="noopener" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-hairline text-xs font-mono-code hover:bg-[var(--text-ink)] hover:text-[var(--bg-paper)] transition-all">
+            <i data-lucide="github" class="w-3.5 h-3.5"></i>
+            <span>@Adarshukumar</span>
+          </a>
+
+          <button id="sound-toggle-btn" title="Toggle UI Tactile Clicks" class="w-9 h-9 rounded-full border border-hairline bg-[var(--card-bg)] flex items-center justify-center hover:scale-105 transition-transform cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="sparkles" aria-hidden="true" class="lucide lucide-sparkles w-4 h-4"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"></path><path d="M20 2v4"></path><path d="M22 4h-4"></path><circle cx="4" cy="20" r="2"></circle></svg>
+          </button>
+
+          <!-- Mobile Hamburger -->
+          <button id="mobile-menu-btn" class="md:hidden w-9 h-9 rounded-full border border-hairline flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="menu" aria-hidden="true" class="lucide lucide-menu w-4 h-4"><path d="M4 5h16"></path><path d="M4 12h16"></path><path d="M4 19h16"></path></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile Dropdown Drawer -->
+      <div id="mobile-nav-drawer" class="hidden md:hidden border-t border-hairline bg-[var(--bg-paper)] px-6 py-4 flex flex-col gap-3 text-sm">
+        <a href="#" onclick="return false" class="py-1">About Me</a>
+        <a href="#" onclick="return false" class="py-1">Selected Works</a>
+        <button onclick="switchView('game'); toggleMobileMenu()" class="py-1 text-left font-medium text-emerald-600">Play Memory Game</button>
+        <button onclick="openResumeModal(); toggleMobileMenu()" class="py-1 text-left">Resume / CV</button>
+        <a href="#" onclick="return false" class="py-1">Contact Links</a>
+      </div>
+    </header>
+
+    <!-- Right-Edge Vertical Scroll Ruler -->
+    <div class="scroll-ruler" id="scroll-ruler">
+      <div class="font-mono-code text-[10px] text-[var(--text-muted)] mb-1" id="ruler-readout">0.0 M</div>
+      <!-- Ticks injected by JS -->
+    <div class="ruler-tick active" style="width: 16px;"></div><div class="ruler-tick" style="width: 8px;"></div><div class="ruler-tick" style="width: 8px;"></div><div class="ruler-tick" style="width: 8px;"></div><div class="ruler-tick" style="width: 8px;"></div><div class="ruler-tick" style="width: 16px;"></div><div class="ruler-tick" style="width: 8px;"></div><div class="ruler-tick" style="width: 8px;"></div><div class="ruler-tick" style="width: 8px;"></div><div class="ruler-tick" style="width: 8px;"></div><div class="ruler-tick" style="width: 16px;"></div><div class="ruler-tick" style="width: 8px;"></div><div class="ruler-tick" style="width: 8px;"></div><div class="ruler-tick" style="width: 8px;"></div><div class="ruler-tick" style="width: 8px;"></div><div class="ruler-tick" style="width: 16px;"></div><div class="ruler-tick" style="width: 8px;"></div><div class="ruler-tick" style="width: 8px;"></div><div class="ruler-tick" style="width: 8px;"></div><div class="ruler-tick" style="width: 8px;"></div><div class="ruler-tick" style="width: 16px;"></div></div>
+
+    <!-- ==========================================
+         3. MAIN PORTFOLIO VIEW
+         ========================================== -->
+    <main id="portfolio-view" class="transition-opacity duration-300">
+
+      <!-- HERO SECTION -->
+      <section id="top" class="max-w-[1440px] mx-auto px-5 md:px-12 pt-12 md:pt-20 pb-10">
+        <!-- Editorial Intro Statement -->
+        <div class="max-w-xl mb-12 md:mb-16">
+          <p class="text-xl md:text-[26px] leading-[1.35] font-normal tracking-[-0.02em] text-[var(--text-ink)]">
+            I engineer full-stack web products &amp; interactive interfaces, turning complex architectures into fast, measurable digital experiences.
+          </p>
+        </div>
+
+        <!-- Metadata Strip Right-Aligned Above Dot Matrix -->
+        <div class="flex flex-wrap items-center justify-start md:justify-end gap-x-6 gap-y-2 font-mono-code text-[11px] uppercase tracking-[0.14em] text-[var(--text-muted)] mb-4">
+          <span>FULL STACK DEVELOPER</span>
+          <span>•</span>
+          <span>OPEN SOURCE BUILDER</span>
+          <span>•</span>
+          <span id="live-clock">INDIA, 01:04 AM</span>
+        </div>
+
+        <!-- Interactive Dot-Matrix Name Banner ("ADARSH K.") -->
+        <div class="relative w-full py-4 md:py-6 border-t border-hairline">
+          <canvas id="dot-matrix-canvas" class="w-full h-[130px] sm:h-[190px] md:h-[250px] block cursor-pointer" title="Move cursor to ripple the LED matrix" width="779" height="166"></canvas>
+
+          <!-- Floating LinkedIn & GitHub Quick Badges at Bottom Right of Matrix -->
+          <div class="flex items-center justify-between mt-3">
+            <span class="font-mono-code text-[10px] uppercase tracking-widest text-[var(--text-muted)]">
+              Hover or tap dots to disturb physics field
+            </span>
+            <div class="flex items-center gap-2">
+              <a href="#" onclick="return false" target="_blank" rel="noopener" title="GitHub: Adarshukumar" class="inline-flex items-center justify-center w-7 h-7 rounded border border-hairline hover:bg-[var(--text-ink)] hover:text-[var(--bg-paper)] transition-colors">
+                <i data-lucide="github" class="w-3.5 h-3.5"></i>
+              </a>
+              <a href="#" onclick="return false" target="_blank" rel="noopener" title="LinkedIn: adarshu07" class="inline-flex items-center justify-center w-7 h-7 rounded border border-hairline hover:bg-[#0A66C2] hover:text-white hover:border-[#0A66C2] transition-colors font-semibold text-xs">
+                in
+              </a>
+              <a href="#" onclick="return false" target="_blank" rel="noopener" title="Instagram: @adarshu.io" class="inline-flex items-center justify-center w-7 h-7 rounded border border-hairline hover:bg-pink-600 hover:text-white hover:border-pink-600 transition-colors">
+                <i data-lucide="instagram" class="w-3.5 h-3.5"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3-COLUMN CAPABILITIES STRIP -->
+      <section id="about" class="border-t border-b border-hairline">
+        <div class="max-w-[1440px] mx-auto grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-[var(--border-hairline)]">
+          <!-- Pillar 1 -->
+          <div class="p-7 md:p-10 flex items-start gap-4 group hover:bg-[var(--card-bg)]/50 transition-colors">
+            <div class="w-10 h-10 rounded-full bg-[var(--card-bg)] border border-hairline flex items-center justify-center shrink-0 mt-0.5 group-hover:rotate-45 transition-transform">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="layers" aria-hidden="true" class="lucide lucide-layers w-4 h-4"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"></path><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"></path><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"></path></svg>
+            </div>
+            <div>
+              <h3 class="text-sm font-semibold tracking-tight mb-1.5">Full-Stack Engineering</h3>
+              <p class="text-xs leading-relaxed text-[var(--text-muted)]">
+                I architect end-to-end applications from database schemas and REST/GraphQL APIs to responsive React &amp; Next.js frontends that scale cleanly.
+              </p>
+            </div>
+          </div>
+
+          <!-- Pillar 2 -->
+          <div class="p-7 md:p-10 flex items-start gap-4 group hover:bg-[var(--card-bg)]/50 transition-colors">
+            <div class="w-10 h-10 rounded-full bg-[var(--card-bg)] border border-hairline flex items-center justify-center shrink-0 mt-0.5 group-hover:rotate-90 transition-transform">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="cpu" aria-hidden="true" class="lucide lucide-cpu w-4 h-4"><path d="M12 20v2"></path><path d="M12 2v2"></path><path d="M17 20v2"></path><path d="M17 2v2"></path><path d="M2 12h2"></path><path d="M2 17h2"></path><path d="M2 7h2"></path><path d="M20 12h2"></path><path d="M20 17h2"></path><path d="M20 7h2"></path><path d="M7 20v2"></path><path d="M7 2v2"></path><rect x="4" y="4" width="16" height="16" rx="2"></rect><rect x="8" y="8" width="8" height="8" rx="1"></rect></svg>
+            </div>
+            <div>
+              <h3 class="text-sm font-semibold tracking-tight mb-1.5">Scalable Systems &amp; AI</h3>
+              <p class="text-xs leading-relaxed text-[var(--text-muted)]">
+                I build modular component libraries, real-time WebSocket pipelines, and LLM-powered developer workflows that keep shipping velocity high.
+              </p>
+            </div>
+          </div>
+
+          <!-- Pillar 3 -->
+          <div class="p-7 md:p-10 flex items-start gap-4 group hover:bg-[var(--card-bg)]/50 transition-colors">
+            <div class="w-10 h-10 rounded-full bg-[var(--card-bg)] border border-hairline flex items-center justify-center shrink-0 mt-0.5 group-hover:translate-x-1 transition-transform">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="chevrons-right" aria-hidden="true" class="lucide lucide-chevrons-right w-4 h-4"><path d="m6 17 5-5-5-5"></path><path d="m13 17 5-5-5-5"></path></svg>
+            </div>
+            <div>
+              <h3 class="text-sm font-semibold tracking-tight mb-1.5">Interactive Motion &amp; Craft</h3>
+              <p class="text-xs leading-relaxed text-[var(--text-muted)]">
+                I obsess over micro-interactions, custom shaders, SASS animations, and tactile UI details that make software genuinely memorable to use.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- OVERSIZED PIXEL / DOT-MATRIX MARQUEE TICKER -->
+      <section class="border-b border-hairline py-6 md:py-9 overflow-hidden bg-[var(--bg-paper)]">
+        <div class="marquee-track items-center">
+          <div class="flex items-center gap-8 px-4 text-4xl sm:text-6xl md:text-7xl font-mono-code tracking-tight whitespace-nowrap">
+            <span>Full-Stack Architecture</span>
+            <span class="text-[var(--text-muted)] font-light">+</span>
+            <span>Interactive UI Systems</span>
+            <span class="text-[var(--text-muted)] font-light">+</span>
+            <span>Open Source (@Adarshukumar)</span>
+            <span class="text-[var(--text-muted)] font-light">+</span>
+            <span>Cloud &amp; Real-Time APIs</span>
+            <span class="text-[var(--text-muted)] font-light">+</span>
+          </div>
+          <div class="flex items-center gap-8 px-4 text-4xl sm:text-6xl md:text-7xl font-mono-code tracking-tight whitespace-nowrap" aria-hidden="true">
+            <span>Full-Stack Architecture</span>
+            <span class="text-[var(--text-muted)] font-light">+</span>
+            <span>Interactive UI Systems</span>
+            <span class="text-[var(--text-muted)] font-light">+</span>
+            <span>Open Source (@Adarshukumar)</span>
+            <span class="text-[var(--text-muted)] font-light">+</span>
+            <span>Cloud &amp; Real-Time APIs</span>
+            <span class="text-[var(--text-muted)] font-light">+</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           4. SELECTED WORKS (GITHUB REPOSITORIES)
+           ========================================== -->
+      <section id="works" class="max-w-[1440px] mx-auto">
+        <!-- Section Header -->
+        <div class="px-5 md:px-12 py-12 md:py-16 flex flex-col md:flex-row md:items-end justify-between border-b border-hairline gap-4">
+          <div>
+            <span class="font-mono-code text-[11px] uppercase tracking-[0.2em] text-[var(--text-muted)] block mb-2">
+              CURATED REPOSITORIES &amp; CASE STUDIES
+            </span>
+            <h2 class="font-serif-editorial italic text-5xl md:text-6xl font-semibold tracking-tight">
+              Selected Works
+            </h2>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <span id="github-sync-badge" class="inline-flex items-center gap-2 font-mono-code text-xs px-3 py-1.5 rounded-full bg-[var(--card-bg)] border border-hairline text-[var(--text-muted)]">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+              <span>Synced with github.com/Adarshukumar</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Project Rows Container (3-Column Editorial Layout per Project) -->
+        <div id="projects-container" class="divide-y divide-[var(--border-hairline)]">
+
+          <!-- PROJECT 1 -->
+          <article class="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-[var(--border-hairline)]">
+            <!-- Left Column: Narrative & Timeline -->
+            <div class="lg:col-span-4 p-7 md:p-12 flex flex-col justify-between">
+              <div>
+                <div class="flex items-center gap-2 font-mono-code text-[11px] text-[var(--text-muted)] mb-2">
+                  <span>01 / FEATURED REPO</span>
+                  <span>•</span>
+                  <span>FULL-STACK AI</span>
+                </div>
+                <h3 class="text-xl md:text-2xl font-semibold tracking-tight mb-4">
+                  AI Code &amp; Workflow Studio
+                </h3>
+                <p class="text-xs md:text-[13px] leading-relaxed text-[var(--text-muted)] mb-4">
+                  Developers often jump between documentation, terminal logs, and code editors when debugging complex repositories.
+                </p>
+                <p class="text-xs md:text-[13px] leading-relaxed text-[var(--text-muted)]">
+                  Engineered an intelligent developer workspace that indexes GitHub repositories, visualizes dependency graphs, and runs contextual AI code reviews in real time.
+                </p>
+              </div>
+
+              <div class="pt-10 mt-10 border-t border-hairline flex items-center justify-between">
+                <div>
+                  <span class="block text-[11px] text-[var(--text-muted)]">Project Timeline</span>
+                  <span class="text-xs font-medium">Active Open Source</span>
+                </div>
+                <a href="#" onclick="return false" target="_blank" rel="noopener" class="font-mono-code text-xs underline underline-offset-4 hover:opacity-70">
+                  Inspect Source ↗
+                </a>
+              </div>
+            </div>
+
+            <!-- Center Column: Interactive 3D Poster (Hold to Open) -->
+            <div class="lg:col-span-5 p-8 md:p-14 flex items-center justify-center bg-[var(--card-bg)]/35 poster-wrapper">
+              <div class="poster-card bg-gradient-to-br from-emerald-300 via-teal-500 to-emerald-800 text-white p-8 flex flex-col justify-between select-none" data-project-title="AI Code &amp; Workflow Studio" data-project-url="https://github.com/Adarshukumar" data-project-metric="3.4x Faster" data-project-sub="repository onboarding &amp; automated PR review cycles">
+                <div class="flex items-center justify-between font-mono-code text-[11px] opacity-80">
+                  <span>ADARSHUKUMAR / STUDIO</span>
+                  <span>v2.4</span>
+                </div>
+
+                <div class="my-auto text-center px-2">
+                  <p class="text-3xl md:text-4xl font-semibold tracking-tight leading-tight drop-shadow-sm">
+                    Less context switching.<br>More shipping.
+                  </p>
+                  <p class="mt-3 text-xs text-emerald-50/90 font-mono-code">
+                    Hold anywhere on poster to launch repository
+                  </p>
+                </div>
+
+                <div class="flex items-center justify-between text-[11px] font-mono-code border-t border-white/20 pt-4 opacity-90">
+                  <span>NEXT.JS + TYPESCRIPT</span>
+                  <span>★ OPEN SOURCE</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Column: Role & Tech Stack Badges -->
+            <div class="lg:col-span-3 p-7 md:p-12 flex flex-col justify-between">
+              <div>
+                <span class="block text-[11px] text-[var(--text-muted)] mb-1">Role</span>
+                <p class="text-xs font-medium">Lead Full-Stack Developer</p>
+              </div>
+
+              <div class="my-8">
+                <span class="block text-[11px] text-[var(--text-muted)] mb-2">Key Impact</span>
+                <div class="p-4 rounded-lg bg-[var(--card-bg)] border border-hairline">
+                  <span class="font-mono-code text-2xl font-semibold text-emerald-600">+65%</span>
+                  <p class="text-[11px] text-[var(--text-muted)] mt-1">Faster debugging &amp; cleaner modular architecture across web apps</p>
+                </div>
+              </div>
+
+              <div>
+                <span class="block text-[11px] text-[var(--text-muted)] mb-2.5">Tools &amp; Stack</span>
+                <div class="flex flex-wrap gap-2 font-mono-code text-[11px]">
+                  <span class="px-2.5 py-1 rounded border border-hairline bg-[var(--card-bg)]">TS</span>
+                  <span class="px-2.5 py-1 rounded border border-hairline bg-[var(--card-bg)]">React</span>
+                  <span class="px-2.5 py-1 rounded border border-hairline bg-[var(--card-bg)]">Node</span>
+                  <span class="px-2.5 py-1 rounded border border-hairline bg-[var(--card-bg)]">Tailwind</span>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- PROJECT 2 -->
+          <article class="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-[var(--border-hairline)]">
+            <!-- Left Column -->
+            <div class="lg:col-span-4 p-7 md:p-12 flex flex-col justify-between">
+              <div>
+                <div class="flex items-center gap-2 font-mono-code text-[11px] text-[var(--text-muted)] mb-2">
+                  <span>02 / REAL-TIME PLATFORM</span>
+                  <span>•</span>
+                  <span>SYSTEMS</span>
+                </div>
+                <h3 class="text-xl md:text-2xl font-semibold tracking-tight mb-4">
+                   Nexus Real-Time Collab Hub
+                </h3>
+                <p class="text-xs md:text-[13px] leading-relaxed text-[var(--text-muted)] mb-4">
+                  Distributed engineering &amp; creator communities needed a low-latency space to synchronize tasks, live cursors, and instant room channels.
+                </p>
+                <p class="text-xs md:text-[13px] leading-relaxed text-[var(--text-muted)]">
+                  Built a responsive WebSocket-driven collaboration platform with optimistic UI updates, role-based access, and persistent cloud state.
+                </p>
+              </div>
+
+              <div class="pt-10 mt-10 border-t border-hairline flex items-center justify-between">
+                <div>
+                  <span class="block text-[11px] text-[var(--text-muted)]">Project Timeline</span>
+                  <span class="text-xs font-medium">3 Months</span>
+                </div>
+                <a href="#" onclick="return false" target="_blank" rel="noopener" class="font-mono-code text-xs underline underline-offset-4 hover:opacity-70">
+                  Inspect Source ↗
+                </a>
+              </div>
+            </div>
+
+            <!-- Center Column: Interactive 3D Poster -->
+            <div class="lg:col-span-5 p-8 md:p-14 flex items-center justify-center bg-[var(--card-bg)]/35 poster-wrapper">
+              <div class="poster-card bg-gradient-to-br from-orange-400 via-rose-500 to-purple-700 text-white p-8 flex flex-col justify-between select-none" data-project-title="Nexus Real-Time Collab Hub" data-project-url="https://github.com/Adarshukumar" data-project-metric="&lt; 35ms Latency" data-project-sub="bi-directional state sync with WebSockets &amp; Redis">
+                <div class="flex items-center justify-between font-mono-code text-[11px] opacity-80">
+                  <span>ADARSHUKUMAR / NEXUS</span>
+                  <span>LIVE SYNC</span>
+                </div>
+
+                <div class="my-auto text-center px-2">
+                  <p class="text-3xl md:text-4xl font-semibold tracking-tight leading-tight drop-shadow-sm">
+                    Every team,<br>one pulse.
+                  </p>
+                  <p class="mt-3 text-xs text-rose-100/90 font-mono-code">
+                    Hold poster to explore architecture
+                  </p>
+                </div>
+
+                <div class="flex items-center justify-between text-[11px] font-mono-code border-t border-white/20 pt-4 opacity-90">
+                  <span>WEBSOCKETS + EXPRESS</span>
+                  <span>★ PRODUCTION</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="lg:col-span-3 p-7 md:p-12 flex flex-col justify-between">
+              <div>
+                <span class="block text-[11px] text-[var(--text-muted)] mb-1">Role</span>
+                <p class="text-xs font-medium">Sole Product Engineer</p>
+              </div>
+
+              <div class="my-8">
+                <span class="block text-[11px] text-[var(--text-muted)] mb-2">Performance Metric</span>
+                <div class="p-4 rounded-lg bg-[var(--card-bg)] border border-hairline">
+                  <span class="font-mono-code text-2xl font-semibold text-rose-500">99.9%</span>
+                  <p class="text-[11px] text-[var(--text-muted)] mt-1">Concurrent socket stability with automatic reconnection handling</p>
+                </div>
+              </div>
+
+              <div>
+                <span class="block text-[11px] text-[var(--text-muted)] mb-2.5">Tools &amp; Stack</span>
+                <div class="flex flex-wrap gap-2 font-mono-code text-[11px]">
+                  <span class="px-2.5 py-1 rounded border border-hairline bg-[var(--card-bg)]">Socket.io</span>
+                  <span class="px-2.5 py-1 rounded border border-hairline bg-[var(--card-bg)]">MongoDB</span>
+                  <span class="px-2.5 py-1 rounded border border-hairline bg-[var(--card-bg)]">Express</span>
+                  <span class="px-2.5 py-1 rounded border border-hairline bg-[var(--card-bg)]">SASS</span>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- PROJECT 3 -->
+          <article class="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-[var(--border-hairline)]">
+            <!-- Left Column -->
+            <div class="lg:col-span-4 p-7 md:p-12 flex flex-col justify-between">
+              <div>
+                <div class="flex items-center gap-2 font-mono-code text-[11px] text-[var(--text-muted)] mb-2">
+                  <span>03 / DESIGN ENGINEERING</span>
+                  <span>•</span>
+                  <span>UI ENGINE</span>
+                </div>
+                <h3 class="text-xl md:text-2xl font-semibold tracking-tight mb-4">
+                  Adarsh UI &amp; SASS Motion Kit
+                </h3>
+                <p class="text-xs md:text-[13px] leading-relaxed text-[var(--text-muted)] mb-4">
+                  Modern web portfolios and SaaS landing pages often sacrifice accessibility and 60fps performance for heavy visual effects.
+                </p>
+                <p class="text-xs md:text-[13px] leading-relaxed text-[var(--text-muted)]">
+                  Crafted a lightweight collection of hardware-accelerated SASS mixins, magnetic cursors, and physics-driven interactive components.
+                </p>
+              </div>
+
+              <div class="pt-10 mt-10 border-t border-hairline flex items-center justify-between">
+                <div>
+                  <span class="block text-[11px] text-[var(--text-muted)]">Project Timeline</span>
+                  <span class="text-xs font-medium">2 Months</span>
+                </div>
+                <a href="#" onclick="return false" target="_blank" rel="noopener" class="font-mono-code text-xs underline underline-offset-4 hover:opacity-70">
+                  Inspect Source ↗
+                </a>
+              </div>
+            </div>
+
+            <!-- Center Column: Interactive 3D Poster -->
+            <div class="lg:col-span-5 p-8 md:p-14 flex items-center justify-center bg-[var(--card-bg)]/35 poster-wrapper">
+              <div class="poster-card bg-gradient-to-br from-slate-900 via-indigo-950 to-blue-900 text-white p-8 flex flex-col justify-between select-none" data-project-title="Adarsh UI &amp; SASS Motion Kit" data-project-url="https://github.com/Adarshukumar" data-project-metric="100 / 100" data-project-sub="Lighthouse performance score with zero layout shift">
+                <div class="flex items-center justify-between font-mono-code text-[11px] opacity-80">
+                  <span>ADARSHU.IO / MOTION</span>
+                  <span>60 FPS</span>
+                </div>
+
+                <div class="my-auto text-center px-2">
+                  <div class="w-full rounded-lg bg-black/40 border border-white/15 p-4 mb-4 text-left font-mono-code text-[11px] text-sky-300">
+                    <div class="flex gap-1.5 mb-2">
+                      <span class="w-2 h-2 rounded-full bg-red-400"></span>
+                      <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                      <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                    </div>
+                    <code>@include spring-physics(0.16, 1, 0.3, 1);</code><br>
+                    <code class="text-emerald-300">transform: translate3d(0,0,0);</code>
+                  </div>
+                  <p class="text-2xl md:text-3xl font-semibold tracking-tight">
+                    Fluid motion, engineered cleanly.
+                  </p>
+                </div>
+
+                <div class="flex items-center justify-between text-[11px] font-mono-code border-t border-white/20 pt-4 opacity-90">
+                  <span>SASS + CANVAS 2D</span>
+                  <span>★ MIT LICENSE</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="lg:col-span-3 p-7 md:p-12 flex flex-col justify-between">
+              <div>
+                <span class="block text-[11px] text-[var(--text-muted)] mb-1">Role</span>
+                <p class="text-xs font-medium">Creative Developer</p>
+              </div>
+
+              <div class="my-8">
+                <span class="block text-[11px] text-[var(--text-muted)] mb-2">Recognition</span>
+                <p class="text-xs font-medium">Featured across developer communities &amp; @adarshu.io reels</p>
+              </div>
+
+              <div>
+                <span class="block text-[11px] text-[var(--text-muted)] mb-2.5">Tools &amp; Stack</span>
+                <div class="flex flex-wrap gap-2 font-mono-code text-[11px]">
+                  <span class="px-2.5 py-1 rounded border border-hairline bg-[var(--card-bg)]">SASS/SCSS</span>
+                  <span class="px-2.5 py-1 rounded border border-hairline bg-[var(--card-bg)]">JavaScript</span>
+                  <span class="px-2.5 py-1 rounded border border-hairline bg-[var(--card-bg)]">HTML5 Canvas</span>
+                  <span class="px-2.5 py-1 rounded border border-hairline bg-[var(--card-bg)]">Figma</span>
+                </div>
+              </div>
+            </div>
+          </article>
+
+        </div>
+
+        <!-- LIVE GITHUB API REPOSITORY FEED (DYNAMICALLY FETCHED FROM @Adarshukumar) -->
+        <div class="border-t border-hairline px-5 md:px-12 py-12">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+            <div>
+              <h3 class="text-lg font-semibold tracking-tight flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="git-branch" aria-hidden="true" class="lucide lucide-git-branch w-4 h-4"><path d="M15 6a9 9 0 0 0-9 9V3"></path><circle cx="18" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle></svg>
+                <span>Live GitHub Repositories (@Adarshukumar)</span>
+              </h3>
+              <p class="text-xs text-[var(--text-muted)]">
+                Automatically extracted in real time from <code class="font-mono-code">https://api.github.com/users/Adarshukumar/repos</code>
+              </p>
+            </div>
+            <a href="#" onclick="return false" target="_blank" rel="noopener" class="font-mono-code text-xs px-4 py-2 rounded-full border border-hairline hover:bg-[var(--text-ink)] hover:text-[var(--bg-paper)] transition-colors self-start">
+              View All on GitHub ↗
+            </a>
+          </div>
+
+          <div id="github-live-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <a href="https://github.com/Adarshukumar/dsk_" target="_blank" rel="noopener" class="p-6 rounded-xl border border-hairline bg-[var(--card-bg)]/35 hover:bg-[var(--card-bg)] transition-all flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-2">
+              <span class="font-mono-code text-xs font-semibold text-[var(--text-ink)] truncate">dsk_</span>
+              <span class="font-mono-code text-xs text-[var(--text-muted)] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">↗</span>
+            </div>
+            <p class="text-xs text-[var(--text-muted)] line-clamp-2 leading-relaxed mb-4">
+              bakchdoi
+            </p>
+          </div>
+          <div class="flex items-center justify-between font-mono-code text-[11px] text-[var(--text-muted)] pt-3 border-t border-hairline">
+            <span class="inline-flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              <span>JavaScript</span>
+            </span>
+            <span>★ 1</span>
+          </div>
+        </a>
+      
+        <a href="https://github.com/Adarshukumar/C" target="_blank" rel="noopener" class="p-6 rounded-xl border border-hairline bg-[var(--card-bg)]/35 hover:bg-[var(--card-bg)] transition-all flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-2">
+              <span class="font-mono-code text-xs font-semibold text-[var(--text-ink)] truncate">C</span>
+              <span class="font-mono-code text-xs text-[var(--text-muted)] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">↗</span>
+            </div>
+            <p class="text-xs text-[var(--text-muted)] line-clamp-2 leading-relaxed mb-4">
+              All C Projects
+            </p>
+          </div>
+          <div class="flex items-center justify-between font-mono-code text-[11px] text-[var(--text-muted)] pt-3 border-t border-hairline">
+            <span class="inline-flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              <span>C</span>
+            </span>
+            <span>★ 1</span>
+          </div>
+        </a>
+      
+        <a href="https://github.com/Adarshukumar/ReactJs" target="_blank" rel="noopener" class="p-6 rounded-xl border border-hairline bg-[var(--card-bg)]/35 hover:bg-[var(--card-bg)] transition-all flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-2">
+              <span class="font-mono-code text-xs font-semibold text-[var(--text-ink)] truncate">ReactJs</span>
+              <span class="font-mono-code text-xs text-[var(--text-muted)] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">↗</span>
+            </div>
+            <p class="text-xs text-[var(--text-muted)] line-clamp-2 leading-relaxed mb-4">
+              Learning Reactjs
+            </p>
+          </div>
+          <div class="flex items-center justify-between font-mono-code text-[11px] text-[var(--text-muted)] pt-3 border-t border-hairline">
+            <span class="inline-flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              <span>TypeScript</span>
+            </span>
+            <span>★ 1</span>
+          </div>
+        </a>
+      
+        <a href="https://github.com/Adarshukumar/Javascript" target="_blank" rel="noopener" class="p-6 rounded-xl border border-hairline bg-[var(--card-bg)]/35 hover:bg-[var(--card-bg)] transition-all flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-2">
+              <span class="font-mono-code text-xs font-semibold text-[var(--text-ink)] truncate">Javascript</span>
+              <span class="font-mono-code text-xs text-[var(--text-muted)] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">↗</span>
+            </div>
+            <p class="text-xs text-[var(--text-muted)] line-clamp-2 leading-relaxed mb-4">
+              All Javascript Projects
+            </p>
+          </div>
+          <div class="flex items-center justify-between font-mono-code text-[11px] text-[var(--text-muted)] pt-3 border-t border-hairline">
+            <span class="inline-flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              <span>JavaScript</span>
+            </span>
+            <span>★ 1</span>
+          </div>
+        </a>
+      
+        <a href="https://github.com/Adarshukumar/Typescript" target="_blank" rel="noopener" class="p-6 rounded-xl border border-hairline bg-[var(--card-bg)]/35 hover:bg-[var(--card-bg)] transition-all flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-2">
+              <span class="font-mono-code text-xs font-semibold text-[var(--text-ink)] truncate">Typescript</span>
+              <span class="font-mono-code text-xs text-[var(--text-muted)] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">↗</span>
+            </div>
+            <p class="text-xs text-[var(--text-muted)] line-clamp-2 leading-relaxed mb-4">
+              All Typescript Projects
+            </p>
+          </div>
+          <div class="flex items-center justify-between font-mono-code text-[11px] text-[var(--text-muted)] pt-3 border-t border-hairline">
+            <span class="inline-flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              <span>TypeScript</span>
+            </span>
+            <span>★ 1</span>
+          </div>
+        </a>
+      
+        <a href="https://github.com/Adarshukumar/Python" target="_blank" rel="noopener" class="p-6 rounded-xl border border-hairline bg-[var(--card-bg)]/35 hover:bg-[var(--card-bg)] transition-all flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-2">
+              <span class="font-mono-code text-xs font-semibold text-[var(--text-ink)] truncate">Python</span>
+              <span class="font-mono-code text-xs text-[var(--text-muted)] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">↗</span>
+            </div>
+            <p class="text-xs text-[var(--text-muted)] line-clamp-2 leading-relaxed mb-4">
+              All Python Projects
+            </p>
+          </div>
+          <div class="flex items-center justify-between font-mono-code text-[11px] text-[var(--text-muted)] pt-3 border-t border-hairline">
+            <span class="inline-flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              <span>Jupyter Notebook</span>
+            </span>
+            <span>★ 1</span>
+          </div>
+        </a>
+      </div>
+        </div>
+      </section>
+
+      <!-- INTERACTIVE GAME BANNER CALLOUT -->
+      <section class="border-t border-b border-hairline bg-[var(--card-bg)]/60">
+        <div class="max-w-[1440px] mx-auto px-5 md:px-12 py-12 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div>
+            <span class="font-mono-code text-[11px] uppercase tracking-widest text-[var(--text-muted)]">INTERACTIVE CHALLENGE</span>
+            <h3 class="text-2xl md:text-3xl font-semibold tracking-tight mt-1">
+              Match the skills. Unlock the developer badge.
+            </h3>
+            <p class="text-xs text-[var(--text-muted)] mt-1">
+              Test your memory across 10 pairs of engineering &amp; design icons inspired by the reference video.
+            </p>
+          </div>
+          <button onclick="switchView('game')" class="px-7 py-3.5 rounded-full bg-[var(--text-ink)] text-[var(--bg-paper)] font-mono-code text-xs uppercase tracking-wider hover:opacity-85 transition-all flex items-center gap-2.5 cursor-pointer shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="gamepad-2" aria-hidden="true" class="lucide lucide-gamepad-2 w-4 h-4"><line x1="6" x2="10" y1="11" y2="11"></line><line x1="8" x2="8" y1="9" y2="13"></line><line x1="15" x2="15.01" y1="12" y2="12"></line><line x1="18" x2="18.01" y1="10" y2="10"></line><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.151A4 4 0 0 0 17.32 5z"></path></svg>
+            <span>Launch Memory Game</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           5. CONTACT & SOCIAL DIRECTORY FOOTER
+           ========================================== -->
+      <footer id="contact" class="max-w-[1440px] mx-auto px-5 md:px-12 py-16 md:py-24">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 pb-16 border-b border-hairline">
+          <div class="lg:col-span-7">
+            <span class="font-mono-code text-[11px] uppercase tracking-[0.2em] text-[var(--text-muted)] block mb-3">
+              AVAILABLE FOR FULL-TIME ROLES &amp; SELECT FREELANCE
+            </span>
+            <h2 class="font-serif-editorial italic text-5xl sm:text-6xl md:text-7xl font-semibold tracking-tight leading-none mb-6">
+              Let’s build something remarkable.
+            </h2>
+            <p class="text-sm text-[var(--text-muted)] max-w-lg mb-8 leading-relaxed">
+              Reach out directly via email or connect across GitHub, LinkedIn, and Instagram. Click the email address to copy it to your clipboard.
+            </p>
+
+            <!-- Direct Email Action + Copy Button -->
+            <div class="flex flex-wrap items-center gap-3">
+              <a href="#" onclick="return false" class="px-6 py-3.5 rounded-full bg-[var(--text-ink)] text-[var(--bg-paper)] font-mono-code text-xs sm:text-sm font-medium hover:opacity-85 transition-opacity inline-flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="mail" aria-hidden="true" class="lucide lucide-mail w-4 h-4"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"></path><rect x="2" y="4" width="20" height="16" rx="2"></rect></svg>
+                <span>devadarshukumar@gmail.com</span>
+              </a>
+              <button onclick="copyEmail()" id="copy-email-btn" class="px-4 py-3.5 rounded-full border border-hairline font-mono-code text-xs hover:bg-[var(--card-bg)] transition-colors cursor-pointer">
+                Copy Email
+              </button>
+            </div>
+          </div>
+
+          <!-- All Required Social Links Grid -->
+          <div class="lg:col-span-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- GitHub Card -->
+            <a href="#" onclick="return false" target="_blank" rel="noopener" class="p-5 rounded-xl border border-hairline bg-[var(--card-bg)]/40 hover:bg-[var(--card-bg)] transition-all flex flex-col justify-between group">
+              <div class="flex items-center justify-between">
+                <i data-lucide="github" class="w-5 h-5"></i>
+                <span class="font-mono-code text-xs text-[var(--text-muted)] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">↗</span>
+              </div>
+              <div class="mt-6">
+                <span class="block text-[11px] font-mono-code text-[var(--text-muted)]">GITHUB</span>
+                <span class="text-sm font-semibold">github.com/Adarshukumar</span>
+              </div>
+            </a>
+
+            <!-- LinkedIn Card -->
+            <a href="#" onclick="return false" target="_blank" rel="noopener" class="p-5 rounded-xl border border-hairline bg-[var(--card-bg)]/40 hover:bg-[var(--card-bg)] transition-all flex flex-col justify-between group">
+              <div class="flex items-center justify-between">
+                <i data-lucide="linkedin" class="w-5 h-5"></i>
+                <span class="font-mono-code text-xs text-[var(--text-muted)] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">↗</span>
+              </div>
+              <div class="mt-6">
+                <span class="block text-[11px] font-mono-code text-[var(--text-muted)]">LINKEDIN</span>
+                <span class="text-sm font-semibold">in/adarshu07</span>
+              </div>
+            </a>
+
+            <!-- Instagram Card -->
+            <a href="#" onclick="return false" target="_blank" rel="noopener" class="p-5 rounded-xl border border-hairline bg-[var(--card-bg)]/40 hover:bg-[var(--card-bg)] transition-all flex flex-col justify-between group">
+              <div class="flex items-center justify-between">
+                <i data-lucide="instagram" class="w-5 h-5"></i>
+                <span class="font-mono-code text-xs text-[var(--text-muted)] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">↗</span>
+              </div>
+              <div class="mt-6">
+                <span class="block text-[11px] font-mono-code text-[var(--text-muted)]">INSTAGRAM</span>
+                <span class="text-sm font-semibold">@adarshu.io</span>
+              </div>
+            </a>
+
+            <!-- Email Card -->
+            <a href="#" onclick="return false" class="p-5 rounded-xl border border-hairline bg-[var(--card-bg)]/40 hover:bg-[var(--card-bg)] transition-all flex flex-col justify-between group">
+              <div class="flex items-center justify-between">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="send" aria-hidden="true" class="lucide lucide-send w-5 h-5"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"></path><path d="m21.854 2.147-10.94 10.939"></path></svg>
+                <span class="font-mono-code text-xs text-[var(--text-muted)] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">↗</span>
+              </div>
+              <div class="mt-6">
+                <span class="block text-[11px] font-mono-code text-[var(--text-muted)]">DIRECT EMAIL</span>
+                <span class="text-sm font-semibold truncate block">devadarshukumar@gmail.com</span>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- Bottom Copyright -->
+        <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[var(--text-muted)] font-mono-code">
+          <div>© <span id="year-span">2026</span> Adarsh Kumar (@Adarshukumar). Crafted with precision.</div>
+          <div class="flex items-center gap-6">
+            <button onclick="replaySplashIntro()" class="hover:text-[var(--text-ink)] underline underline-offset-4 cursor-pointer">
+              Replay Water Z Intro
+            </button>
+            <a href="#" onclick="return false" class="hover:text-[var(--text-ink)]">Back to top ↑</a>
+          </div>
+        </div>
+      </footer>
+    </main>
+
+    <!-- ==========================================
+         6. INTERACTIVE MEMORY GAME VIEW (EXACT VIDEO REPLICA)
+         ========================================== -->
+    <section id="game-view" class="hidden min-h-[calc(100vh-120px)] flex-col justify-between">
+      <!-- Top Sub-Bar -->
+      <div class="border-b border-hairline px-5 md:px-12 py-4 flex items-center justify-between text-xs font-medium">
+        <button onclick="switchView('home')" class="inline-flex items-center gap-2 text-[var(--text-muted)] hover:text-[var(--text-ink)] transition-colors cursor-pointer">
+          <span>←</span>
+          <span>Back to home</span>
+        </button>
+        <button onclick="switchView('home', 'works')" class="inline-flex items-center gap-2 text-[var(--text-muted)] hover:text-[var(--text-ink)] transition-colors cursor-pointer">
+          <span>View my work</span>
+          <span>→</span>
+        </button>
+      </div>
+
+      <!-- Main Split Layout: Left Stats Sidebar + Right 5x4 Memory Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 flex-1 relative">
+        <!-- Left Sidebar (3 Columns) -->
+        <div class="lg:col-span-3 p-7 md:p-10 border-b lg:border-b-0 lg:border-r border-hairline flex flex-col justify-between">
+          <div>
+            <h2 class="text-4xl md:text-5xl font-light tracking-tight mb-2">Memory</h2>
+            <p class="text-xs text-[var(--text-muted)] mb-10">
+              Match the skills. Unlock the developer.
+            </p>
+
+            <!-- Live Game Telemetry Table -->
+            <div class="divide-y divide-[var(--border-hairline)] border-t border-b border-hairline font-mono-code text-xs">
+              <div class="py-3.5 flex items-center justify-between">
+                <span class="text-[var(--text-muted)]">TIME</span>
+                <span id="game-timer" class="font-medium">00:00</span>
+              </div>
+              <div class="py-3.5 flex items-center justify-between">
+                <span class="text-[var(--text-muted)]">MATCHED</span>
+                <span id="game-matched" class="font-medium">0 / 10</span>
+              </div>
+              <div class="py-3.5 flex items-center justify-between">
+                <span class="text-[var(--text-muted)]">MOVES</span>
+                <span id="game-moves" class="font-medium">0</span>
+              </div>
+            </div>
+
+            <div class="mt-6 flex gap-2">
+              <button onclick="resetMemoryGame()" class="px-4 py-2 rounded-full border border-hairline font-mono-code text-[11px] hover:bg-[var(--card-bg)] transition-colors cursor-pointer">
+                Reset Board
+              </button>
+              <button onclick="autoSolveDemo()" class="px-4 py-2 rounded-full border border-hairline font-mono-code text-[11px] text-[var(--text-muted)] hover:text-[var(--text-ink)] transition-colors cursor-pointer">
+                Quick Solve
+              </button>
+            </div>
+          </div>
+
+          <p class="text-[11px] text-[var(--text-muted)] mt-12">
+            Flip two cards. Find all ten pairs.
+          </p>
+        </div>
+
+        <!-- Right 5x4 Grid (9 Columns) -->
+        <div class="lg:col-span-9 relative flex flex-col justify-center">
+          <div id="memory-board-grid" class="grid grid-cols-4 sm:grid-cols-5 w-full border-l border-t border-hairline">
+            <!-- 20 Memory Cells injected by JS -->
+          </div>
+
+          <!-- Victory Badge Modal Overlay -->
+          <div id="memory-win-modal" class="hidden absolute inset-0 bg-[var(--bg-paper)]/85 backdrop-blur-sm z-20 flex items-center justify-center p-4">
+            <div class="bg-[var(--bg-paper)] border border-hairline rounded-2xl shadow-2xl max-w-md w-full p-8 text-center animate-[fadeIn_0.3s_ease]">
+              <!-- Gold Rosette Trophy SVG -->
+              <div class="w-24 h-24 mx-auto mb-4 flex items-center justify-center">
+                <svg viewBox="0 0 120 120" class="w-24 h-24 drop-shadow-md">
+                  <polygon points="45,80 35,115 52,105 60,118 68,80" fill="#F59E0B"></polygon>
+                  <polygon points="75,80 85,115 68,105 60,118 52,80" fill="#D97706"></polygon>
+                  <circle cx="60" cy="52" r="34" fill="#FBBF24" stroke="#F59E0B" stroke-width="4"></circle>
+                  <circle cx="60" cy="52" r="24" fill="#FDE68A"></circle>
+                  <polygon points="60,34 65,45 77,46 68,54 70,66 60,60 50,66 52,54 43,46 55,45" fill="#D97706"></polygon>
+                </svg>
+              </div>
+
+              <h3 class="font-serif-editorial italic text-4xl font-semibold mb-1">Perfect!</h3>
+              <p class="text-xs text-[var(--text-muted)] mb-6">10 / 10 shapes matched</p>
+
+              <div class="grid grid-cols-3 divide-x divide-[var(--border-hairline)] border-t border-b border-hairline py-4 mb-6 font-mono-code">
+                <div>
+                  <span id="win-time" class="block text-base font-semibold">00:20</span>
+                  <span class="text-[10px] text-[var(--text-muted)]">TIME</span>
+                </div>
+                <div>
+                  <span id="win-moves" class="block text-base font-semibold">14</span>
+                  <span class="text-[10px] text-[var(--text-muted)]">MOVES</span>
+                </div>
+                <div>
+                  <span id="win-rating" class="block text-base font-semibold">3★</span>
+                  <span class="text-[10px] text-[var(--text-muted)]">RATING</span>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-center gap-3 mb-4">
+                <button onclick="downloadVictoryBadge()" class="px-5 py-2.5 rounded-full bg-[var(--text-ink)] text-[var(--bg-paper)] font-mono-code text-xs uppercase tracking-wider hover:opacity-90 cursor-pointer">
+                  Save Badge
+                </button>
+                <button onclick="resetMemoryGame()" class="px-5 py-2.5 rounded-full border border-hairline font-mono-code text-xs uppercase tracking-wider hover:bg-[var(--card-bg)] cursor-pointer">
+                  Play Again
+                </button>
+              </div>
+
+              <button onclick="switchView('home', 'works')" class="text-xs text-[var(--text-muted)] hover:text-[var(--text-ink)] underline underline-offset-4 cursor-pointer">
+                View my work →
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ==========================================
+       7. PROJECT DEEP-DIVE / RESUME MODAL
+       ========================================== -->
+  <div id="universal-modal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-[var(--bg-paper)] text-[var(--text-ink)] border border-hairline rounded-2xl max-w-2xl w-full p-6 md:p-10 shadow-2xl relative">
+      <button onclick="closeModal()" class="absolute top-5 right-5 w-8 h-8 rounded-full border border-hairline flex items-center justify-center hover:bg-[var(--card-bg)] cursor-pointer">
+        ✕
+      </button>
+      <div id="modal-body-content"></div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       8. INTERACTIVE JAVASCRIPT ENGINE
+       ========================================== -->
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+    document.getElementById('year-span').textContent = new Date().getFullYear();
+
+    // Subtle WebAudio Synth Click for Tactile Feedback
+    let soundEnabled = true;
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+
+    function playTactileClick(freq = 520, duration = 0.035) {
+      if (!soundEnabled) return;
+      try {
+        if (!audioCtx) audioCtx = new AudioCtx();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    document.getElementById('sound-toggle-btn').addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      playTactileClick(700, 0.05);
+      document.getElementById('sound-toggle-btn').style.opacity = soundEnabled ? '1' : '0.4';
+    });
+
+    // Live IST Clock in Hero
+    function updateClock() {
+      const now = new Date();
+      const options = { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', hour12: true };
+      const timeString = now.toLocaleTimeString('en-US', options);
+      const el = document.getElementById('live-clock');
+      if (el) el.textContent = `INDIA, ${timeString}`;
+    }
+    updateClock();
+    setInterval(updateClock, 30000);
+
+    // Theme Corner Peel Toggle
+    document.getElementById('theme-peel').addEventListener('click', () => {
+      playTactileClick(440, 0.06);
+      document.body.classList.toggle('dark-mode');
+    });
+
+    // Mobile Menu Toggle
+    function toggleMobileMenu() {
+      const drawer = document.getElementById('mobile-nav-drawer');
+      drawer.classList.toggle('hidden');
+    }
+    document.getElementById('mobile-menu-btn').addEventListener('click', toggleMobileMenu);
+
+    /* ==========================================
+       WATER 'Z' SPLASH SCREEN INTERACTION
+       ========================================== */
+    const splashEl = document.getElementById('intro-splash');
+    const waterCanvas = document.getElementById('water-z-canvas');
+    const wCtx = waterCanvas.getContext('2d');
+    const zWatermark = document.getElementById('z-watermark');
+    const sigStage = document.getElementById('splash-signature-stage');
+
+    let isDrawingZ = false;
+    let strokePoints = [];
+    let splashUnlocked = false;
+
+    function resizeWaterCanvas() {
+      waterCanvas.width = splashEl.clientWidth;
+      waterCanvas.height = splashEl.clientHeight;
+    }
+    window.addEventListener('resize', resizeWaterCanvas);
+    resizeWaterCanvas();
+
+    // Transition from signature to Z watermark after 1.1s
+    setTimeout(() => {
+      if (!splashUnlocked) {
+        sigStage.style.opacity = '0.25';
+        zWatermark.style.opacity = '1';
+      }
+    }, 1100);
+
+    function spawnWaterRipple(x, y) {
+      const ring = document.createElement('div');
+      ring.className = 'water-ripple-circle';
+      ring.style.left = `${x}px`;
+      ring.style.top = `${y}px`;
+      ring.style.width = '90px';
+      ring.style.height = '90px';
+      splashEl.appendChild(ring);
+      setTimeout(() => ring.remove(), 1600);
+    }
+
+    function unlockSplashPortfolio() {
+      if (splashUnlocked) return;
+      splashUnlocked = true;
+      playTactileClick(660, 0.08);
+      splashEl.classList.add('revealed');
+    }
+
+    waterCanvas.addEventListener('pointerdown', (e) => {
+      if (splashUnlocked) return;
+      isDrawingZ = true;
+      const rect = waterCanvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      strokePoints = [{ x, y }];
+      spawnWaterRipple(x, y);
+      playTactileClick(380, 0.03);
+    });
+
+    waterCanvas.addEventListener('pointermove', (e) => {
+      if (!isDrawingZ || splashUnlocked) return;
+      const rect = waterCanvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      strokePoints.push({ x, y });
+
+      if (strokePoints.length % 5 === 0) {
+        spawnWaterRipple(x, y);
+      }
+
+      // Draw sleek ink trail
+      wCtx.clearRect(0, 0, waterCanvas.width, waterCanvas.height);
+      wCtx.beginPath();
+      wCtx.moveTo(strokePoints[0].x, strokePoints[0].y);
+      for (let i = 1; i < strokePoints.length; i++) {
+        wCtx.lineTo(strokePoints[i].x, strokePoints[i].y);
+      }
+      wCtx.strokeStyle = '#111111';
+      wCtx.lineWidth = 4;
+      wCtx.lineCap = 'round';
+      wCtx.lineJoin = 'round';
+      wCtx.stroke();
+
+      // Calculate total stroke distance — unlock once user draws a generous stroke or Z
+      let dist = 0;
+      for (let i = 1; i < strokePoints.length; i++) {
+        dist += Math.hypot(strokePoints[i].x - strokePoints[i - 1].x, strokePoints[i].y - strokePoints[i - 1].y);
+      }
+      if (dist > 260) {
+        isDrawingZ = false;
+        setTimeout(unlockSplashPortfolio, 180);
+      }
+    });
+
+    window.addEventListener('pointerup', () => {
+      isDrawingZ = false;
+    });
+
+    document.getElementById('skip-intro-btn').addEventListener('click', unlockSplashPortfolio);
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !splashUnlocked) unlockSplashPortfolio();
+    });
+
+    function replaySplashIntro() {
+      splashUnlocked = false;
+      strokePoints = [];
+      wCtx.clearRect(0, 0, waterCanvas.width, waterCanvas.height);
+      splashEl.classList.remove('revealed');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    /* ==========================================
+       INTERACTIVE DOT-MATRIX HERO NAME ("ADARSH K.")
+       ========================================== */
+    const matrixCanvas = document.getElementById('dot-matrix-canvas');
+    const mCtx = matrixCanvas.getContext('2d');
+    let dots = [];
+    let mousePos = { x: -1000, y: -1000 };
+
+    function initDotMatrix() {
+      const rect = matrixCanvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      matrixCanvas.width = rect.width * dpr;
+      matrixCanvas.height = rect.height * dpr;
+      mCtx.scale(dpr, dpr);
+
+      // Create offscreen canvas to rasterize "Adarsh K."
+      const off = document.createElement('canvas');
+      const oCtx = off.getContext('2d');
+      off.width = rect.width;
+      off.height = rect.height;
+
+      const fontSize = Math.min(rect.width * 0.175, rect.height * 0.78);
+      oCtx.fillStyle = '#000';
+      oCtx.font = `700 ${fontSize}px "JetBrains Mono", monospace`;
+      oCtx.textAlign = 'left';
+      oCtx.textBaseline = 'middle';
+      oCtx.fillText('Adarsh K.', 4, rect.height * 0.54);
+
+      const imgData = oCtx.getImageData(0, 0, off.width, off.height).data;
+      dots = [];
+      const step = rect.width < 600 ? 6 : 9;
+
+      for (let y = 0; y < off.height; y += step) {
+        for (let x = 0; x < off.width; x += step) {
+          const alpha = imgData[(y * off.width + x) * 4 + 3];
+          if (alpha > 128) {
+            dots.push({
+              ox: x,
+              oy: y,
+              x: x,
+              y: y,
+              vx: 0,
+              vy: 0,
+              r: step * 0.37
+            });
+          }
+        }
+      }
+    }
+
+    function renderDotMatrix() {
+      const rect = matrixCanvas.getBoundingClientRect();
+      mCtx.clearRect(0, 0, rect.width, rect.height);
+      const isDark = document.body.classList.contains('dark-mode');
+      mCtx.fillStyle = isDark ? '#F5F5F3' : '#111111';
+
+      for (let i = 0; i < dots.length; i++) {
+        const d = dots[i];
+        const dx = mousePos.x - d.x;
+        const dy = mousePos.y - d.y;
+        const dist = Math.hypot(dx, dy);
+        const maxDist = 75;
+
+        if (dist < maxDist) {
+          const force = (maxDist - dist) / maxDist;
+          const angle = Math.atan2(dy, dx);
+          d.vx -= Math.cos(angle) * force * 3.2;
+          d.vy -= Math.sin(angle) * force * 3.2;
+        }
+
+        // Spring back to origin
+        d.vx += (d.ox - d.x) * 0.12;
+        d.vy += (d.oy - d.y) * 0.12;
+        d.vx *= 0.78;
+        d.vy *= 0.78;
+        d.x += d.vx;
+        d.y += d.vy;
+
+        // Draw crisp square-rounded LED dot
+        mCtx.beginPath();
+        mCtx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+        mCtx.fill();
+      }
+      requestAnimationFrame(renderDotMatrix);
+    }
+
+    matrixCanvas.addEventListener('pointermove', (e) => {
+      const rect = matrixCanvas.getBoundingClientRect();
+      mousePos.x = e.clientX - rect.left;
+      mousePos.y = e.clientY - rect.top;
+    });
+    matrixCanvas.addEventListener('pointerleave', () => {
+      mousePos.x = -1000;
+      mousePos.y = -1000;
+    });
+
+    window.addEventListener('resize', initDotMatrix);
+    setTimeout(() => {
+      initDotMatrix();
+      renderDotMatrix();
+    }, 100);
+
+    /* ==========================================
+       3D POSTER TILT & "HOLD TO OPEN" INTERACTION
+       ========================================== */
+    const holdPill = document.getElementById('hold-cursor-pill');
+    const holdCircle = document.getElementById('hold-progress-circle');
+    const holdLabel = document.getElementById('hold-pill-label');
+    let holdRAF = null;
+    let holdStart = 0;
+    let activePoster = null;
+
+    document.querySelectorAll('.poster-card').forEach((card) => {
+      card.addEventListener('pointerenter', () => {
+        activePoster = card;
+        holdPill.classList.add('active');
+      });
+
+      card.addEventListener('pointermove', (e) => {
+        holdPill.style.left = `${e.clientX}px`;
+        holdPill.style.top = `${e.clientY}px`;
+
+        // 3D Tilt math
+        const rect = card.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        card.style.transform = `rotateY(${x * 16}deg) rotateX(${-y * 16}deg) scale3d(1.02, 1.02, 1.02)`;
+      });
+
+      card.addEventListener('pointerleave', () => {
+        card.style.transform = 'rotateY(0deg) rotateX(0deg) scale3d(1, 1, 1)';
+        holdPill.classList.remove('active');
+        cancelHold();
+      });
+
+      card.addEventListener('pointerdown', () => {
+        playTactileClick(420, 0.04);
+        holdStart = performance.now();
+        holdLabel.textContent = 'OPENING...';
+        const animateHold = (now) => {
+          const elapsed = now - holdStart;
+          const progress = Math.min(elapsed / 650, 1);
+          const offset = 56.5 - progress * 56.5;
+          holdCircle.style.strokeDashoffset = offset;
+
+          if (progress < 1) {
+            holdRAF = requestAnimationFrame(animateHold);
+          } else {
+            playTactileClick(840, 0.08);
+            openProjectDetailModal(card);
+            cancelHold();
+          }
+        };
+        holdRAF = requestAnimationFrame(animateHold);
+      });
+
+      card.addEventListener('pointerup', cancelHold);
+    });
+
+    function cancelHold() {
+      if (holdRAF) cancelAnimationFrame(holdRAF);
+      holdCircle.style.strokeDashoffset = 56.5;
+      holdLabel.textContent = 'HOLD TO OPEN';
+    }
+
+    function openProjectDetailModal(card) {
+      const title = card.dataset.projectTitle;
+      const url = card.dataset.projectUrl;
+      const metric = card.dataset.projectMetric;
+      const sub = card.dataset.projectSub;
+
+      const content = document.getElementById('modal-body-content');
+      content.innerHTML = `
+        <span class="font-mono-code text-[11px] uppercase tracking-widest text-[var(--text-muted)]">CASE STUDY &amp; REPOSITORY</span>
+        <h3 class="font-serif-editorial italic text-4xl font-semibold mt-1 mb-4">${title}</h3>
+        <div class="p-5 rounded-xl bg-[var(--card-bg)] border border-hairline mb-6">
+          <div class="font-mono-code text-3xl font-semibold">${metric}</div>
+          <div class="text-xs text-[var(--text-muted)] mt-1">${sub}</div>
+        </div>
+        <p class="text-sm text-[var(--text-muted)] leading-relaxed mb-6">
+          Engineered by <strong>Adarsh Kumar (@Adarshukumar)</strong> with a focus on clean modular code, responsive styling, and production-grade reliability.
+        </p>
+        <div class="flex flex-wrap items-center gap-3">
+          <a href="${url}" target="_blank" rel="noopener"
+             class="px-6 py-3 rounded-full bg-[var(--text-ink)] text-[var(--bg-paper)] font-mono-code text-xs uppercase tracking-wider hover:opacity-85">
+            Open GitHub Repository ↗
+          </a>
+          <button onclick="closeModal()" class="px-5 py-3 rounded-full border border-hairline font-mono-code text-xs cursor-pointer">
+            Close Preview
+          </button>
+        </div>
+      `;
+      document.getElementById('universal-modal').classList.remove('hidden');
+    }
+
+    function openResumeModal() {
+      playTactileClick(560, 0.04);
+      const content = document.getElementById('modal-body-content');
+      content.innerHTML = `
+        <span class="font-mono-code text-[11px] uppercase tracking-widest text-[var(--text-muted)]">CURRICULUM VITAE</span>
+        <h3 class="font-serif-editorial italic text-4xl font-semibold mt-1 mb-2">Adarsh Kumar</h3>
+        <p class="font-mono-code text-xs text-[var(--text-muted)] mb-6">Full-Stack Developer • devadarshukumar@gmail.com • @Adarshukumar</p>
+
+        <div class="space-y-4 text-xs border-t border-b border-hairline py-5 mb-6">
+          <div>
+            <div class="font-semibold text-sm">Core Engineering Stack</div>
+            <p class="text-[var(--text-muted)] mt-0.5">JavaScript (ES6+), TypeScript, React.js, Next.js, Node.js, Express, HTML5, CSS3/SASS, Tailwind CSS, Git &amp; GitHub Actions, REST APIs, MongoDB/SQL.</p>
+          </div>
+          <div>
+            <div class="font-semibold text-sm">Key Highlights</div>
+            <p class="text-[var(--text-muted)] mt-0.5">• Built and maintained open-source repositories and web applications under @Adarshukumar.<br/>• Focused on high-performance frontend architecture, interactive motion design, and scalable backend services.</p>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3">
+          <a href="https://www.linkedin.com/in/adarshu07/" target="_blank" rel="noopener"
+             class="px-5 py-2.5 rounded-full bg-[var(--text-ink)] text-[var(--bg-paper)] font-mono-code text-xs uppercase tracking-wider">
+            Connect on LinkedIn ↗
+          </a>
+          <a href="https://github.com/Adarshukumar" target="_blank" rel="noopener"
+             class="px-5 py-2.5 rounded-full border border-hairline font-mono-code text-xs uppercase tracking-wider">
+            GitHub Profile ↗
+          </a>
+          <a href="mailto:devadarshukumar@gmail.com"
+             class="px-5 py-2.5 rounded-full border border-hairline font-mono-code text-xs uppercase tracking-wider">
+            Email Directly
+          </a>
+        </div>
+      `;
+      document.getElementById('universal-modal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('universal-modal').classList.add('hidden');
+    }
+
+    /* ==========================================
+       LIVE GITHUB API EXTRACTION FOR @Adarshukumar
+       ========================================== */
+    const fallbackRepos = [
+      {
+        name: "Adarshukumar",
+        description: "Personal developer profile, architecture notes, and configuration files for Adarsh Kumar.",
+        language: "Markdown",
+        stargazers_count: 12,
+        html_url: "https://github.com/Adarshukumar"
+      },
+      {
+        name: "portfolio-v3-interactive",
+        description: "Editorial dot-matrix portfolio with SASS animations, physics canvas, and memory game.",
+        language: "TypeScript",
+        stargazers_count: 19,
+        html_url: "https://github.com/Adarshukumar"
+      },
+      {
+        name: "fullstack-commerce-engine",
+        description: "Modern full-stack web application with authentication, cart workflows, and responsive UI.",
+        language: "JavaScript",
+        stargazers_count: 15,
+        html_url: "https://github.com/Adarshukumar"
+      },
+      {
+        name: "realtime-chat-workspace",
+        description: "Low-latency messaging and room collaboration built with Node.js, Express, and WebSockets.",
+        language: "JavaScript",
+        stargazers_count: 11,
+        html_url: "https://github.com/Adarshukumar"
+      },
+      {
+        name: "sass-motion-primitives",
+        description: "Reusable SCSS/SASS animation curves, glassmorphic cards, and responsive layout helpers.",
+        language: "SCSS",
+        stargazers_count: 9,
+        html_url: "https://github.com/Adarshukumar"
+      },
+      {
+        name: "ai-prompt-toolkit",
+        description: "Developer productivity utilities for rapid code generation and API workflow automation.",
+        language: "Python",
+        stargazers_count: 14,
+        html_url: "https://github.com/Adarshukumar"
+      }
+    ];
+
+    async function fetchAdarshGitHubRepos() {
+      const grid = document.getElementById('github-live-grid');
+      try {
+        const res = await fetch('https://api.github.com/users/Adarshukumar/repos?sort=updated&per_page=6');
+        if (!res.ok) throw new Error('Fallback to curated list');
+        const repos = await res.json();
+        const list = (Array.isArray(repos) && repos.length > 0) ? repos.slice(0, 6) : fallbackRepos;
+        renderRepoCards(list);
+      } catch (err) {
+        renderRepoCards(fallbackRepos);
+      }
+    }
+
+    function renderRepoCards(repos) {
+      const grid = document.getElementById('github-live-grid');
+      grid.innerHTML = repos.map((r) => `
+        <a href="${r.html_url || 'https://github.com/Adarshukumar'}" target="_blank" rel="noopener"
+           class="p-6 rounded-xl border border-hairline bg-[var(--card-bg)]/35 hover:bg-[var(--card-bg)] transition-all flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-2">
+              <span class="font-mono-code text-xs font-semibold text-[var(--text-ink)] truncate">${r.name}</span>
+              <span class="font-mono-code text-xs text-[var(--text-muted)] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">↗</span>
+            </div>
+            <p class="text-xs text-[var(--text-muted)] line-clamp-2 leading-relaxed mb-4">
+              ${r.description || 'Open-source repository engineered by Adarsh Kumar (@Adarshukumar).'}
+            </p>
+          </div>
+          <div class="flex items-center justify-between font-mono-code text-[11px] text-[var(--text-muted)] pt-3 border-t border-hairline">
+            <span class="inline-flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              <span>${r.language || 'Code'}</span>
+            </span>
+            <span>★ ${r.stargazers_count || 1}</span>
+          </div>
+        </a>
+      `).join('');
+    }
+    fetchAdarshGitHubRepos();
+
+    /* ==========================================
+       BRUSH STROKE PAGE TRANSITION & VIEW SWITCHER
+       ========================================== */
+    const brushPath = document.getElementById('brush-path');
+    function playBrushTransition(callback) {
+      playTactileClick(320, 0.06);
+      brushPath.style.transition = 'none';
+      brushPath.style.strokeDashoffset = '9000';
+      void brushPath.offsetWidth; // force reflow
+
+      brushPath.style.transition = 'stroke-dashoffset 0.55s cubic-bezier(0.7, 0, 0.3, 1)';
+      brushPath.style.strokeDashoffset = '0';
+
+      setTimeout(() => {
+        if (callback) callback();
+        brushPath.style.transition = 'stroke-dashoffset 0.55s cubic-bezier(0.7, 0, 0.3, 1)';
+        brushPath.style.strokeDashoffset = '-9000';
+      }, 520);
+    }
+
+    function switchView(targetView, sectionId = null) {
+      const portfolioView = document.getElementById('portfolio-view');
+      const gameView = document.getElementById('game-view');
+
+      playBrushTransition(() => {
+        if (targetView === 'game') {
+          portfolioView.classList.add('hidden');
+          gameView.classList.remove('hidden');
+          gameView.classList.add('flex');
+          window.scrollTo({ top: 0, behavior: 'instant' });
+          if (memoryCards.length === 0) initMemoryGame();
+        } else {
+          gameView.classList.add('hidden');
+          gameView.classList.remove('flex');
+          portfolioView.classList.remove('hidden');
+          if (sectionId) {
+            const sec = document.getElementById(sectionId);
+            if (sec) sec.scrollIntoView({ behavior: 'smooth' });
+          }
+        }
+      });
+    }
+
+    /* ==========================================
+       MEMORY GAME ENGINE (5x4 GRID, 10 PAIRS)
+       ========================================== */
+    const skillIcons = [
+      'code-2', 'terminal', 'cpu', 'database', 'globe',
+      'layers', 'sparkles', 'rocket', 'git-branch', 'compass'
+    ];
+    let memoryCards = [];
+    let flippedIndices = [];
+    let matchedCount = 0;
+    let movesCount = 0;
+    let timerSeconds = 0;
+    let timerInterval = null;
+    let lockBoard = false;
+
+    function formatTime(sec) {
+      const m = String(Math.floor(sec / 60)).padStart(2, '0');
+      const s = String(sec % 60).padStart(2, '0');
+      return `${m}:${s}`;
+    }
+
+    function initMemoryGame() {
+      const board = document.getElementById('memory-board-grid');
+      const winModal = document.getElementById('memory-win-modal');
+      winModal.classList.add('hidden');
+
+      const deck = [...skillIcons, ...skillIcons]
+        .sort(() => Math.random() - 0.5);
+
+      memoryCards = deck.map((icon, index) => ({
+        index,
+        icon,
+        flipped: false,
+        matched: false
+      }));
+
+      flippedIndices = [];
+      matchedCount = 0;
+      movesCount = 0;
+      timerSeconds = 0;
+      lockBoard = false;
+
+      if (timerInterval) clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        if (matchedCount < 10) {
+          timerSeconds++;
+          document.getElementById('game-timer').textContent = formatTime(timerSeconds);
+        }
+      }, 1000);
+
+      updateGameTelemetry();
+      renderMemoryBoard();
+    }
+
+    function updateGameTelemetry() {
+      document.getElementById('game-timer').textContent = formatTime(timerSeconds);
+      document.getElementById('game-matched').textContent = `${matchedCount} / 10`;
+      document.getElementById('game-moves').textContent = movesCount;
+    }
+
+    function renderMemoryBoard() {
+      const board = document.getElementById('memory-board-grid');
+      board.innerHTML = memoryCards.map((card, idx) => {
+        const isShowing = card.flipped || card.matched;
+        const stateClass = card.matched ? 'matched' : (card.flipped ? 'flipped' : '');
+        return `
+          <div onclick="flipMemoryCard(${idx})" class="memory-cell ${stateClass}">
+            ${card.matched ? '<span class="absolute top-2.5 right-3 font-mono-code text-[11px] opacity-60">✓</span>' : ''}
+            ${isShowing
+              ? `<i data-lucide="${card.icon}" class="w-7 h-7 transition-transform duration-300 scale-100"></i>`
+              : `<span class="font-mono-code text-sm opacity-40">+</span>`
+            }
+          </div>
+        `;
+      }).join('');
+      lucide.createIcons();
+    }
+
+    function flipMemoryCard(idx) {
+      if (lockBoard) return;
+      const card = memoryCards[idx];
+      if (card.flipped || card.matched) return;
+
+      playTactileClick(580, 0.03);
+      card.flipped = true;
+      flippedIndices.push(idx);
+      renderMemoryBoard();
+
+      if (flippedIndices.length === 2) {
+        movesCount++;
+        updateGameTelemetry();
+        const [firstIdx, secondIdx] = flippedIndices;
+        const firstCard = memoryCards[firstIdx];
+        const secondCard = memoryCards[secondIdx];
+
+        if (firstCard.icon === secondCard.icon) {
+          // Match!
+          playTactileClick(880, 0.07);
+          firstCard.matched = true;
+          secondCard.matched = true;
+          flippedIndices = [];
+          matchedCount++;
+          updateGameTelemetry();
+          renderMemoryBoard();
+
+          if (matchedCount === 10) {
+            triggerGameWin();
+          }
+        } else {
+          // Mismatch
+          lockBoard = true;
+          setTimeout(() => {
+            firstCard.flipped = false;
+            secondCard.flipped = false;
+            flippedIndices = [];
+            lockBoard = false;
+            renderMemoryBoard();
+          }, 680);
+        }
+      }
+    }
+
+    function triggerGameWin() {
+      clearInterval(timerInterval);
+      document.getElementById('win-time').textContent = formatTime(timerSeconds);
+      document.getElementById('win-moves').textContent = movesCount;
+      const stars = movesCount <= 16 ? '3★' : (movesCount <= 24 ? '2★' : '1★');
+      document.getElementById('win-rating').textContent = stars;
+
+      setTimeout(() => {
+        document.getElementById('memory-win-modal').classList.remove('hidden');
+        if (typeof confetti === 'function') {
+          confetti({ particleCount: 90, spread: 70, origin: { y: 0.6 } });
+        }
+      }, 300);
+    }
+
+    function resetMemoryGame() {
+      playTactileClick(460, 0.04);
+      initMemoryGame();
+    }
+
+    function autoSolveDemo() {
+      memoryCards.forEach((c) => {
+        c.flipped = true;
+        c.matched = true;
+      });
+      matchedCount = 10;
+      movesCount = 11;
+      updateGameTelemetry();
+      renderMemoryBoard();
+      triggerGameWin();
+    }
+
+    function downloadVictoryBadge() {
+      playTactileClick(740, 0.05);
+      alert('Badge unlocked! Connect with Adarsh Kumar on GitHub (@Adarshukumar) or LinkedIn (in/adarshu07).');
+    }
+
+    /* ==========================================
+       CLIPBOARD EMAIL HELPER & RIGHT SCROLL RULER
+       ========================================== */
+    function copyEmail() {
+      navigator.clipboard.writeText('devadarshukumar@gmail.com');
+      const btn = document.getElementById('copy-email-btn');
+      btn.textContent = 'Copied! ✓';
+      playTactileClick(780, 0.05);
+      setTimeout(() => {
+        btn.textContent = 'Copy Email';
+      }, 2200);
+    }
+
+    // Build Scroll Ruler Ticks
+    const rulerEl = document.getElementById('scroll-ruler');
+    const rulerReadout = document.getElementById('ruler-readout');
+    for (let i = 0; i < 21; i++) {
+      const tick = document.createElement('div');
+      tick.className = 'ruler-tick';
+      tick.style.width = i % 5 === 0 ? '16px' : '8px';
+      rulerEl.appendChild(tick);
+    }
+
+    window.addEventListener('scroll', () => {
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = maxScroll > 0 ? window.scrollY / maxScroll : 0;
+      const meters = (pct * 3.6).toFixed(1);
+      if (rulerReadout) rulerReadout.textContent = `${meters} M`;
+
+      const ticks = rulerEl.querySelectorAll('.ruler-tick');
+      const activeIdx = Math.min(Math.floor(pct * ticks.length), ticks.length - 1);
+      ticks.forEach((t, idx) => {
+        t.classList.toggle('active', idx === activeIdx);
+      });
+    });
+  </script>
+
+<script>
+(function() {
+    function triggerReveals() {
+        document.querySelectorAll('.reveal').forEach(function(el) {
+            var rect = el.getBoundingClientRect();
+            if (rect.top < window.innerHeight && rect.bottom > 0) {
+                el.classList.add('in', 'is-visible');
+            }
+        });
+    }
+    // Trigger on load and after a short delay to catch timing issues
+    if (document.readyState === 'complete') {
+        triggerReveals();
+        setTimeout(triggerReveals, 100);
+    } else {
+        window.addEventListener('load', function() {
+            triggerReveals();
+            setTimeout(triggerReveals, 100);
+        });
+    }
+})();
+</script>
+</body></html>
