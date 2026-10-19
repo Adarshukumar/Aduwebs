@@ -266,3 +266,17 @@ Found by *looking* at the site + verifying each in code. Priority-ordered. **All
 The design is **genuinely strong**: a coherent token system, a memorable pixel×serif×script type trio, disciplined hairline grids, one-easing motion language, and a clever "GitHub-as-CMS" data layer with honest fallbacks — all in one dependency-free file with real accessibility care. The issues above are small, surgical fixes (three are one-liners) that make the *existing* design behave exactly as it already looks in the good screenshots (`22`, `24`, `03`, `09`, `11`).
 
 *— End of deep note. Companion files: `screenshots/` (35 angles), `index.html` (the site), `uploads/` (originals).*
+
+---
+
+## 13. Refinement — 19 Oct 2026 (de-GitHub pass, same design)
+
+Requested by Adarsh: GitHub should step back; skills and his other profiles step forward. No redesign — everything reuses the site's existing card/button/tab language.
+
+- **Work section → Skills** ("Code I speak, tools I trust."). Same project-card rows, now fed by a static `SKILLS` dataset (Python, JavaScript, FastAPI, LangChain & RAG, React, HTML/CSS) with working filters (All / Languages / AI & APIs / Frontend) and a toolbox strip (Docker, Flask, MongoDB, Firebase, Git, WordPress, HuggingFace Spaces).
+- **Profiles section** (was `#github`, now `#profiles` — section id + `data-section` + nav `data-nav` renamed together): the beloved GitHub profile card + live stats + slim sync bar stay; the repo-browser is gone, replaced by an **ID batch** in the same card style — LinkedIn (`/in/adarshu07`), Hugging Face (`@AdarshJi`, 15+ Spaces), Instagram (`@adarshu.io`), Email.
+- **Hero/nav**: stats are now 10+ languages & tools · 15+ live AI tools · freelancing since 2024 · 24/7 curiosity; secondary CTA → LinkedIn profile; location → "Delhi, India — Working worldwide"; nav labels Skills / Profiles.
+- **Content** sourced from the uploaded LinkedIn profile (public facts only; the raw saved page was NOT published — it contains private page data).
+- **§10 bug fixes applied and browser-verified**: `[hidden]` guard (no avatar/fallback overlap), GitHub bio fallback (no stuck "Loading…"), sync icon sized, mobile-menu close trap fixed (`.menu-open .site-header` rises above the menu with light controls — real tap-to-close tested), anchor `scroll-margin`, theme-aware game dots.
+- **Dead code removed** (~10 KB): repo list/search/filter, project modal/dialog, work filters. JS has zero dangling element references.
+- **Evidence**: `screenshots-refine/` — 19 real-Chromium shots (desktop/mobile/dark, filters, menu open + closed, live-synced stats "18 public repositories · synced just now").
