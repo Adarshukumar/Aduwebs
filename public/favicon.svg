@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="14" fill="#101010"/>
+  <text
+    x="30"
+    y="45"
+    font-family="'Allura','Brush Script MT',cursive"
+    font-size="42"
+    fill="#f4f1e9"
+    text-anchor="middle"
+  >AK</text>
+  <text
+    x="50"
+    y="26"
+    font-family="'Pixelify Sans','Courier New',monospace"
+    font-size="22"
+    font-weight="700"
+    fill="#c8ff37"
+    text-anchor="middle"
+  >+</text>
+</svg>
