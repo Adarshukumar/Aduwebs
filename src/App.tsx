@@ -12,19 +12,6 @@ import { GithubProvider } from "./context/GithubContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import { ToastProvider } from "./context/ToastContext";
 
-/** Route-level fallback that keeps the paper shell visible while a page loads. */
-function PageFallback() {
-  return (
-    <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 px-6">
-      <div className="flex items-start">
-        <span className="font-script text-[52px] leading-none">AK</span>
-        <span className="font-display mt-2 text-xl leading-none text-acid">+</span>
-      </div>
-      <p className="micro-label">Loading…</p>
-    </div>
-  );
-}
-
 export default function App() {
   return (
     <ThemeProvider>

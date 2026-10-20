@@ -16,7 +16,7 @@ import {
   repoLanguages,
   type RepoFamily,
 } from "../lib/github";
-import { cx, gradientFor, relativeTime } from "../lib/utils";
+import { cx, relativeTime } from "../lib/utils";
 
 const PAGE_SIZE = 9;
 
