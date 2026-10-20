@@ -2,7 +2,7 @@
 
 A multi-page portfolio for **Adarsh Kumar** — product designer, creative developer and AI/ML builder from Delhi. Built as a Vite + React + TypeScript SPA, styled with Tailwind CSS v4 and animated with Framer Motion and hand-written CSS.
 
-**Live:** [https://aduwebs.vercel.app](https://aduwebs.vercel.app)
+**Live:** [https://adarshu.vercel.app](https://adarshu.vercel.app)
 
 ---
 
@@ -108,12 +108,12 @@ The repo ships a hardened `vercel.json`:
 - immutable one-year caching for hashed `/assets/*`, a week for `/img/*`
 - `nosniff`, `SAMEORIGIN`, strict referrer policy and a locked-down permissions policy
 
-The live project is **`aduwebs`** (`prj_IArXIau0UCA3azcZd0mI8YgC884C`) in the `devadarshukumar-6419` Vercel account, with the production alias **https://aduwebs.vercel.app**.
+The live project is **`adarshu`** (`prj_IArXIau0UCA3azcZd0mI8YgC884C`, renamed from `aduwebs` on 21 Oct 2026) in the `devadarshukumar-6419` Vercel account, with the production alias **https://adarshu.vercel.app**.
 
 Redeploy from this checkout:
 
 ```bash
-npx vercel link          # once — pick the existing "aduwebs" project
+npx vercel link          # once — pick the existing "adarshu" project
 npx vercel --prod        # build + deploy to production
 ```
 
