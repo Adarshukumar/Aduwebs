@@ -12,7 +12,7 @@ export interface RouteMeta {
   path: string;
 }
 
-const SITE = "https://adarshkumar.vercel.app";
+const SITE = "https://adarshkumar-one.vercel.app";
 
 export const ROUTE_META: Record<string, RouteMeta> = {
   "/": {
