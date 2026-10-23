@@ -14,6 +14,12 @@ export default defineConfig([
       tseslint.configs.recommended,
       reactHooks.configs.flat.recommended,
       reactRefresh.configs.vite,
+      {
+        rules: {
+          // Files like Icons.tsx legitimately export component + lookup map.
+          "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
+        },
+      },
     ],
     languageOptions: {
       ecmaVersion: 2020,

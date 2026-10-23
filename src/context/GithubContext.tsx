@@ -41,7 +41,15 @@ export function GithubProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    void fetchProfile(false);
+    // Deferred a microtask so the first paint is never blocked by the fetch
+    // handshake (and so the effect body stays free of synchronous setState).
+    let cancelled = false;
+    queueMicrotask(() => {
+      if (!cancelled) void fetchProfile(false);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [fetchProfile]);
 
   const resync = useCallback(async () => {

@@ -116,14 +116,14 @@ export function Lab() {
     <>
       <PageHero
         kicker="AI Lab / 005"
-        title="Fifteen tools,"
-        outline="one obsession."
+        title="Fifteen built,"
+        outline="eight on show."
         description="LLM apps, RAG pipelines, diffusion demos and a router that speaks to 48 chat models through a single endpoint — most of it live on HuggingFace Spaces, all of it free to try."
         meta={
           <>
             <span className="chip">
               <span className="chip-dot" style={{ ["--dot-color" as string]: "#35d07f" }} />
-              {liveCount} of {LAB_TOOLS.length} showcased tools live
+              {liveCount} of {LAB_TOOLS.length} featured tools live
             </span>
             <span className="chip">48 models behind one endpoint</span>
             <a
@@ -325,7 +325,7 @@ export function Lab() {
                 <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" aria-hidden="true" />
                 <span className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" aria-hidden="true" />
                 <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" aria-hidden="true" />
-                <span className="ml-2 text-[11px] text-[#6b6862]">router.py</span>
+                <span className="ml-2 text-[11px] text-[#96938a]">router.py</span>
               </div>
               <pre className="whitespace-pre-wrap">
                 <code>

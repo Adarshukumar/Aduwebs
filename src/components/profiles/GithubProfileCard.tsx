@@ -58,7 +58,7 @@ export function GithubProfileCard() {
               {profile.name || PROFILE.name}
             </strong>
             <span className="font-mono-code mt-2 block text-[12px] text-acid">
-              @{profile.login || PROFILE.githubUser}
+              {PROFILE.handle}
             </span>
             <p className="mt-3 max-w-xl text-[13px] leading-relaxed text-white/60">
               {profile.bio ||

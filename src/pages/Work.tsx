@@ -16,7 +16,7 @@ import {
   repoLanguages,
   type RepoFamily,
 } from "../lib/github";
-import { cx, gradientFor, relativeTime } from "../lib/utils";
+import { cx, relativeTime } from "../lib/utils";
 
 const PAGE_SIZE = 9;
 
@@ -113,7 +113,9 @@ export function Work() {
               <span className="chip-dot" style={{ ["--dot-color" as string]: "#35d07f" }} />
               {status === "loading" ? "Syncing with GitHub…" : data.live ? "Live from GitHub" : "Cached snapshot"}
             </span>
-            <span className="chip">{data.profile.public_repos} repositories</span>
+            <span className="chip">
+              {data.repos.length} shown · {data.profile.public_repos} public
+            </span>
             <span className="chip">
               <Star className="h-3 w-3" aria-hidden="true" /> {totalStars} total stars
             </span>

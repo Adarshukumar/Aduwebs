@@ -1,162 +1,14 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { cx, isFinePointer, prefersReducedMotion } from "../../lib/utils";
-
-/* ─────────────────────  intro loader (once per session)  ───────────────── */
-
-export function IntroLoader() {
-  const [done, setDone] = useState(false);
-  const [mounted, setMounted] = useState(true);
-
-  useEffect(() => {
-    if (prefersReducedMotion()) {
-      setMounted(false);
-      document.body.classList.add("ready");
-      return;
-    }
-
-    let seen = false;
-    try {
-      seen = sessionStorage.getItem("adarsh-intro-seen") === "true";
-    } catch {
-      /* ignore */
-    }
-
-    if (seen) {
-      setMounted(false);
-      document.body.classList.add("ready");
-      return;
-    }
-
-    const exit = window.setTimeout(() => setDone(true), 1150);
-    const unmount = window.setTimeout(() => {
-      setMounted(false);
-      try {
-        sessionStorage.setItem("adarsh-intro-seen", "true");
-      } catch {
-        /* ignore */
-      }
-    }, 2250);
-    const ready = window.setTimeout(() => document.body.classList.add("ready"), 900);
-
-    return () => {
-      window.clearTimeout(exit);
-      window.clearTimeout(unmount);
-      window.clearTimeout(ready);
-    };
-  }, []);
-
-  if (!mounted) return null;
-
-  return (
-    <div className={cx("intro-loader", done && "is-done")} aria-hidden="true">
-      <div className="flex flex-col items-center gap-5">
-        <div className="loader-mark flex items-start">
-          <span className="font-script text-[88px] leading-none text-[#f4f1e9]">AK</span>
-          <span className="font-display mt-3 text-3xl leading-none text-acid">+</span>
-        </div>
-        <div className="loader-line w-[110px]" />
-        <p className="micro-label !text-[#7d7a72]">Portfolio loading</p>
-      </div>
-    </div>
-  );
-}
-
-/* ───────────────────────────  cursor ring  ────────────────────────────── */
-
-export function CursorRing() {
-  const ringRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!isFinePointer() || prefersReducedMotion()) return;
-
-    const ring = ringRef.current;
-    if (!ring) return;
-
-    let mouseX = window.innerWidth / 2;
-    let mouseY = window.innerHeight / 2;
-    let ringX = mouseX;
-    let ringY = mouseY;
-    let frame = 0;
-
-    ring.classList.add("active");
-
-    const onMove = (event: MouseEvent) => {
-      mouseX = event.clientX;
-      mouseY = event.clientY;
-    };
-
-    // Event delegation so dynamically rendered cards also grow the ring
-    // (fixes the audit note that late-rendered rows were never bound).
-    const onOver = (event: MouseEvent) => {
-      const target = event.target as HTMLElement | null;
-      const interactive = target?.closest(
-        "a, button, input, select, textarea, .memory-card, [data-cursor]"
-      );
-      ring.classList.toggle("hover", Boolean(interactive));
-    };
-
-    const onLeave = () => ring.classList.remove("active");
-    const onEnter = () => ring.classList.add("active");
-
-    const animate = () => {
-      ringX += (mouseX - ringX) * 0.16;
-      ringY += (mouseY - ringY) * 0.16;
-      // transform, not left/top — keeps the ring on the compositor.
-      ring.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) translate(-50%, -50%)`;
-      frame = requestAnimationFrame(animate);
-    };
-
-    window.addEventListener("mousemove", onMove, { passive: true });
-    document.addEventListener("mouseover", onOver, { passive: true });
-    document.addEventListener("mouseleave", onLeave);
-    document.addEventListener("mouseenter", onEnter);
-    frame = requestAnimationFrame(animate);
-
-    return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener("mousemove", onMove);
-      document.removeEventListener("mouseover", onOver);
-      document.removeEventListener("mouseleave", onLeave);
-      document.removeEventListener("mouseenter", onEnter);
-    };
-  }, []);
-
-  return <div ref={ringRef} className="cursor-ring" aria-hidden="true" />;
-}
+import { applyRouteMeta, injectStructuredData } from "../../lib/seo";
+import { refreshScroll, scrollToId, scrollToTop, useScrollProgress } from "../../lib/scroll";
+import { cx, prefersReducedMotion } from "../../lib/utils";
 
 /* ───────────────────────  scroll progress rail  ───────────────────────── */
 
-export function useScrollProgress() {
-  const [percent, setPercent] = useState(0);
-
-  useEffect(() => {
-    let frame = 0;
-    const update = () => {
-      frame = 0;
-      const scrollTop = window.scrollY;
-      const scrollable = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = scrollable > 0 ? Math.min(scrollable, scrollTop) / scrollable : 0;
-      setPercent(Math.round(progress * 100));
-    };
-    const onScroll = () => {
-      if (!frame) frame = requestAnimationFrame(update);
-    };
-    update();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    return () => {
-      if (frame) cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-    };
-  }, []);
-
-  return percent;
-}
-
 export function ScrollRail() {
-  const percent = useScrollProgress();
+  const progress = useScrollProgress();
+  const percent = Math.round(progress * 100);
 
   return (
     <div className="progress-rail" aria-hidden="true">
@@ -183,7 +35,6 @@ export function PageWipe() {
 
     const run = () => {
       el.classList.remove("run");
-      // force reflow so the animation can restart
       void el.offsetWidth;
       el.classList.add("run");
       window.setTimeout(() => el.classList.remove("run"), 1000);
@@ -235,21 +86,83 @@ export function WipeLink({ to, onClick, ...rest }: WipeLinkProps) {
   );
 }
 
-/** Scrolls to top and re-triggers entrance choreography on every route change.
- *  The very first run is left to <IntroLoader/>, so the hero choreography
- *  never fires behind the loader curtain. */
+/**
+ * Route side-effects, in one place: metadata, scroll reset, scroll-engine
+ * refresh, and the entrance choreography that the loader would otherwise do.
+ * The very first run is left to <IntroLoader/>.
+ */
 export function RouteEffects() {
-  const { pathname } = useLocation();
+  const { pathname, hash } = useLocation();
+
+  // In-page anchors must go through Lenis, or the browser's smooth scroll and
+  // the engine fight over the same scrollTop.
+  useEffect(() => {
+    const onClick = (event: MouseEvent) => {
+      if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey) return;
+      const anchor = (event.target as HTMLElement | null)?.closest<HTMLAnchorElement>('a[href^="#"]');
+      if (!anchor) return;
+      const id = anchor.getAttribute("href")?.slice(1);
+      if (!id || id === "top") return;
+      if (!document.getElementById(id)) return;
+      event.preventDefault();
+      scrollToId(id);
+      history.replaceState(null, "", `#${id}`);
+    };
+    document.addEventListener("click", onClick);
+    return () => document.removeEventListener("click", onClick);
+  }, []);
   const firstRun = useRef(true);
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "auto" });
+    applyRouteMeta(pathname);
+    injectStructuredData();
+
+    if (hash) {
+      const target = document.querySelector(hash);
+      if (target) {
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+      }
+    }
+
+    scrollToTop(true);
+
     if (firstRun.current) {
       firstRun.current = false;
       return;
     }
+
     document.body.classList.add("ready");
-  }, [pathname]);
+    // New page, new document height.
+    requestAnimationFrame(() => refreshScroll());
+  }, [pathname, hash]);
 
   return null;
+}
+
+/** Small helper for anchors that scroll inside the page. */
+export function SectionLink({
+  to,
+  className,
+  children,
+}: {
+  to: string;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <a
+      href={`#${to}`}
+      className={cx(className)}
+      onClick={(event) => {
+        const target = document.getElementById(to);
+        if (!target) return;
+        event.preventDefault();
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+        history.replaceState(null, "", `#${to}`);
+      }}
+    >
+      {children}
+    </a>
+  );
 }

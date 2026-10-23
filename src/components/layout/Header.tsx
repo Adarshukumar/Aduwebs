@@ -1,35 +1,71 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { ArrowUp, Menu, Moon, Sun, X } from "lucide-react";
 import { NAV_LINKS, PROFILE } from "../../lib/data";
 import { useTheme } from "../../context/ThemeContext";
 import { cx } from "../../lib/utils";
-import { useScrollProgress, useWipeNavigate } from "../fx/Effects";
+import { useWipeNavigate } from "../fx/Effects";
+import { pauseScroll, resumeScroll, scrollToTop, useScrolled, useScrollProgress } from "../../lib/scroll";
 
 export function Header() {
   const { theme, toggle } = useTheme();
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const percent = useScrollProgress();
-  const wipeNavigate = useWipeNavigate();
   const { pathname } = useLocation();
 
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 12);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  // The panel is open *for a route*: navigating (including back/forward) closes
+  // it without an effect that writes state on every pathname change.
+  const [menuState, setMenuState] = useState({ open: false, at: pathname });
+  const menuOpen = menuState.open && menuState.at === pathname;
+  const setMenuOpen = (open: boolean) => setMenuState({ open, at: pathname });
+  const scrolled = useScrolled(12);
+  const percent = Math.round(useScrollProgress() * 100);
+  const wipeNavigate = useWipeNavigate();
+  const panelRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     document.body.classList.toggle("menu-open", menuOpen);
-    return () => document.body.classList.remove("menu-open");
+    if (menuOpen) pauseScroll();
+    else resumeScroll();
+    return () => {
+      document.body.classList.remove("menu-open");
+      resumeScroll();
+    };
   }, [menuOpen]);
 
-  // Close the overlay menu whenever the route changes.
+  // Focus management: move into the panel, trap Tab, restore on close.
   useEffect(() => {
-    setMenuOpen(false);
-  }, [pathname]);
+    if (!menuOpen) return;
+    const panel = panelRef.current;
+    if (!panel) return;
+
+    const focusables = panel.querySelectorAll<HTMLElement>('a[href], button:not([disabled])');
+    focusables[0]?.focus();
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setMenuOpen(false);
+        return;
+      }
+      if (event.key !== "Tab" || focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    const trigger = triggerRef.current;
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      trigger?.focus();
+    };
+  }, [menuOpen]);
 
   const go = (to: string) => (event: React.MouseEvent) => {
     event.preventDefault();
@@ -61,7 +97,7 @@ export function Header() {
           )}
         >
           <span className="font-script text-[34px] leading-none">AK</span>
-          <span className="font-display mt-1.5 text-base leading-none text-acid">+</span>
+          <span className="mark-plus font-display mt-1.5 text-base leading-none">+</span>
         </a>
 
         <nav aria-label="Primary navigation" className="hidden justify-center gap-7 lg:flex">
@@ -100,21 +136,18 @@ export function Header() {
             type="button"
             onClick={toggle}
             aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
-            className={cx(
-              "round-button",
-              menuOpen && "!border-white/30 !text-[#f4f1e9] hover:!bg-[#f4f1e9] hover:!text-[#101010]"
-            )}
+            className={cx("round-button", menuOpen && "menu-close-button !border-white/30")}
           >
             {theme === "dark" ? <Sun aria-hidden="true" /> : <Moon aria-hidden="true" />}
           </button>
 
           <button
             type="button"
-            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            onClick={() => scrollToTop(false)}
             aria-label="Back to top"
             className={cx(
               "round-button progress-ring relative hidden sm:grid",
-              menuOpen && "!text-[#f4f1e9]"
+              menuOpen && "invisible"
             )}
             style={{ ["--progress" as string]: `${percent}%` }}
           >
@@ -122,13 +155,14 @@ export function Header() {
           </button>
 
           <button
+            ref={triggerRef}
             type="button"
-            onClick={() => setMenuOpen((open) => !open)}
+            onClick={() => setMenuOpen(!menuOpen)}
             aria-label={menuOpen ? "Close navigation" : "Open navigation"}
             aria-expanded={menuOpen}
             className={cx(
               "round-button lg:hidden",
-              menuOpen && "!border-white/30 !text-[#f4f1e9] hover:!bg-[#f4f1e9] hover:!text-[#101010]"
+              menuOpen && "menu-close-button !border-white/30"
             )}
           >
             {menuOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
@@ -139,6 +173,7 @@ export function Header() {
       {/* Mobile menu — always dark, sits *under* the raised header so the
           close button is never trapped (fixes audit issue §10.1). */}
       <div
+        ref={panelRef}
         className={cx(
           "fixed inset-[10px] z-101 flex flex-col justify-center gap-1 rounded-[18px] bg-[#0c0c0c] px-7 transition-all duration-[450ms] lg:hidden",
           menuOpen
@@ -147,6 +182,9 @@ export function Header() {
         )}
         style={{ transitionTimingFunction: "var(--ease)" }}
         aria-hidden={!menuOpen}
+        role="dialog"
+        aria-modal={menuOpen || undefined}
+        aria-label="Site navigation"
       >
         <nav aria-label="Mobile navigation" className="flex flex-col">
           {NAV_LINKS.map((link, index) => (

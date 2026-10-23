@@ -14,16 +14,17 @@ interface RevealProps {
  */
 export function Reveal({ children, className, delay = 0, as = "div" }: RevealProps) {
   const ref = useRef<HTMLElement | null>(null);
-  const [visible, setVisible] = useState(false);
+  // No IntersectionObserver (or no motion allowed) → start visible: content is
+  // never allowed to depend on an animation having run.
+  const [visible, setVisible] = useState(
+    () => typeof window !== "undefined" && !("IntersectionObserver" in window)
+  );
   const Tag = as as "div";
 
   useEffect(() => {
     const node = ref.current;
     if (!node) return;
-    if (!("IntersectionObserver" in window)) {
-      setVisible(true);
-      return;
-    }
+    if (!("IntersectionObserver" in window)) return;
 
     const observer = new IntersectionObserver(
       (entries) => {

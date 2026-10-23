@@ -64,13 +64,17 @@ function validate(form: FormState): FormErrors {
 
 function FaqItem({ item, index }: { item: { q: string; a: string }; index: number }) {
   const [open, setOpen] = useState(index === 0);
+  const panelId = `faq-panel-${index}`;
+  const buttonId = `faq-button-${index}`;
 
   return (
     <Reveal delay={(Math.min(index, 2)) as 0 | 1 | 2} className="border-b border-line">
       <button
         type="button"
+        id={buttonId}
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
+        aria-controls={panelId}
         className="flex w-full items-start justify-between gap-5 py-5 text-left transition-colors duration-300 hover:text-[#4b58ff]"
       >
         <span className="font-serif-ed text-[19px] leading-snug md:text-[21px]">{item.q}</span>
@@ -84,6 +88,9 @@ function FaqItem({ item, index }: { item: { q: string; a: string }; index: numbe
         />
       </button>
       <div
+        id={panelId}
+        role="region"
+        aria-labelledby={buttonId}
         className="grid transition-[grid-template-rows] duration-500"
         style={{
           gridTemplateRows: open ? "1fr" : "0fr",
@@ -103,6 +110,7 @@ export function Contact() {
   const [form, setForm] = useState<FormState>(EMPTY);
   const [errors, setErrors] = useState<FormErrors>({});
   const [sent, setSent] = useState(false);
+  const [draft, setDraft] = useState<{ subject: string; body: string; mailto: string } | null>(null);
 
   const update = <K extends keyof FormState>(key: K, value: FormState[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -141,12 +149,17 @@ export function Contact() {
       "— Sent from adarshukumar.dev contact form",
     ].join("\n");
 
-    window.location.href = `mailto:${PROFILE.email}?subject=${encodeURIComponent(
+    const mailto = `mailto:${PROFILE.email}?subject=${encodeURIComponent(
       subject
     )}&body=${encodeURIComponent(body)}`;
 
+    // A mailto: hands off to the OS and gives us no receipt, so the panel says
+    // "your app should be open" and repeats every field as a fallback the
+    // visitor can copy. Nothing claims the message was delivered.
     setSent(true);
+    setDraft({ subject, body, mailto });
     show("Opening your email app…");
+    window.location.href = mailto;
   };
 
   const reset = () => {
@@ -206,6 +219,30 @@ export function Contact() {
                     </a>{" "}
                     directly and I'll get back to you.
                   </p>
+                  {draft ? (
+                    <div className="w-full rounded-[14px] border border-line bg-surface2/60 p-4">
+                      <div className="mb-2 flex items-center justify-between gap-3">
+                        <span className="micro-label">Your message, if you need to copy it</span>
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            try {
+                              await navigator.clipboard.writeText(draft.mailto);
+                              show("Message copied — paste it anywhere");
+                            } catch {
+                              show("Copy failed — select the text below");
+                            }
+                          }}
+                          className="text-link text-[12px]"
+                        >
+                          Copy
+                        </button>
+                      </div>
+                      <pre className="max-h-40 overflow-auto whitespace-pre-wrap font-mono-code text-[11.5px] leading-relaxed text-muted">
+{draft.body}
+                      </pre>
+                    </div>
+                  ) : null}
                   <div className="mt-2 flex flex-wrap gap-3">
                     <Magnetic>
                       <button type="button" onClick={reset} className="btn btn-outline btn-sm">
@@ -226,7 +263,7 @@ export function Contact() {
                     <h2 className="font-display text-[clamp(1.5rem,3vw,2rem)] leading-none uppercase">
                       Start a conversation
                     </h2>
-                    <span className="micro-label hidden sm:block">4 fields</span>
+                    <span className="micro-label hidden sm:block">5 fields</span>
                   </div>
 
                   <div className="grid gap-5 sm:grid-cols-2">

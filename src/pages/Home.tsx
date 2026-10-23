@@ -5,13 +5,14 @@ import { Reveal } from "../components/ui/Reveal";
 import { SectionHeading } from "../components/ui/SectionHeading";
 import { Magnetic } from "../components/ui/Magnetic";
 import { Poster } from "../components/ui/Poster";
+import { LatestRepos } from "../components/home/LatestRepos";
 import { SkillRow } from "../components/skills/SkillRow";
 import { GithubProfileCard } from "../components/profiles/GithubProfileCard";
 import { IdGrid } from "../components/profiles/IdGrid";
 import { MemoryGame } from "../components/arcade/MemoryGame";
 import { ContactBand } from "../components/contact/ContactBand";
 import { WipeLink } from "../components/fx/Effects";
-import { PROCESS, PROFILE, SERVICES, SKILLS } from "../lib/data";
+import { PROCESS, PROFILE, SERVICES, SKILLS, TOOLBOX } from "../lib/data";
 import { cx, gradientFor } from "../lib/utils";
 
 const SERVICE_ICONS = { code: Code2, bulb: Lightbulb, camera: Camera } as const;
@@ -110,13 +111,12 @@ export function Home() {
         <Reveal className="mt-10 flex flex-wrap items-center justify-between gap-5">
           <div className="flex flex-wrap items-center gap-2">
             <span className="micro-label mr-1">Also in the toolbox</span>
-            {["Docker", "MongoDB", "Firebase", "Flask", "Git", "WordPress", "HF Spaces"].map(
-              (tool) => (
-                <span key={tool} className="chip">
-                  {tool}
-                </span>
-              )
-            )}
+            {TOOLBOX.slice(0, 6).map((tool) => (
+              <span key={tool} className="chip">
+                {tool}
+              </span>
+            ))}
+            <span className="chip chip-more">+{TOOLBOX.length - 6} more</span>
           </div>
           <Magnetic>
             <WipeLink to="/stack" className="btn btn-outline btn-sm">
@@ -190,6 +190,8 @@ export function Home() {
           </Magnetic>
         </Reveal>
       </section>
+
+      <LatestRepos />
 
       {/* ────────────────────────  profiles  ──────────────────────── */}
       <section

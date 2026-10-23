@@ -5,6 +5,7 @@ import { Magnetic } from "../components/ui/Magnetic";
 import { Marquee } from "../components/ui/Marquee";
 import { ImageBand } from "../components/ui/ImageBand";
 import { IdGrid } from "../components/profiles/IdGrid";
+import { AvatarType, PortraitFrame } from "../components/profile/AvatarPortrait";
 import { ContactBand } from "../components/contact/ContactBand";
 import { WipeLink } from "../components/fx/Effects";
 import {
@@ -16,14 +17,13 @@ import {
   TIMELINE,
 } from "../lib/data";
 import { useGithub } from "../context/GithubContext";
-import { useState } from "react";
 import { cx } from "../lib/utils";
 
 const FACTS = [
   { icon: MapPin, label: "Based in", value: "Delhi, India 🇮🇳" },
-  { icon: GraduationCap, label: "Studied", value: "B.Com (Hons), Dyal Singh College · University of Delhi" },
+  { icon: GraduationCap, label: "Studied", value: PROFILE.education },
   { icon: Terminal, label: "Debugging with", value: "print() — zero regrets" },
-  { icon: Coffee, label: "Coffee level", value: "☕☕☕ always" },
+  { icon: Coffee, label: "Coffee level", value: `☕☕☕ ${PROFILE.coffee.toLowerCase()}` },
 ];
 
 const ADARSH_PY = `#!/usr/bin/env python3
@@ -77,8 +77,6 @@ function highlight(line: string) {
 
 export function About() {
   const { data } = useGithub();
-  const [avatarFailed, setAvatarFailed] = useState(false);
-  const avatar = avatarFailed ? null : `${data.profile.avatar_url}?s=800`;
 
   return (
     <>
@@ -103,27 +101,14 @@ export function About() {
       <section className="section-pad" aria-labelledby="story-title">
         <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
           <Reveal className="group relative">
-            <div className="relative aspect-[4/5] overflow-hidden rounded-[18px] border border-line bg-[#0d0d0d]">
-              {avatar ? (
-                <img
-                  src={avatar}
-                  alt={PROFILE.name}
-                  onError={() => setAvatarFailed(true)}
-                  className="photo-bw h-full w-full object-cover"
-                />
-              ) : (
-                <div className="dot-grid grid h-full w-full place-items-center">
-                  <span className="font-display text-[6rem] text-acid" aria-hidden="true">
-                    AK
-                  </span>
-                </div>
-              )}
-              <div
-                className="absolute inset-x-0 bottom-0 h-1/2"
-                style={{ background: "linear-gradient(to top, rgba(8,8,8,0.9), transparent)" }}
-                aria-hidden="true"
-              />
-              <div className="absolute inset-x-0 bottom-0 flex items-end justify-between p-4">
+            <PortraitFrame
+              src={`${data.profile.avatar_url}?s=800`}
+              alt={PROFILE.name}
+              variant="story"
+              label="About / 002"
+              badge={PROFILE.availability}
+            >
+              <div className="flex items-end justify-between gap-3">
                 <div>
                   <span className="micro-label block !text-white/55">{PROFILE.role}</span>
                   <span className="font-display block text-xl text-[#f4f1e9] uppercase">
@@ -132,7 +117,7 @@ export function About() {
                 </div>
                 <span className="micro-label !text-acid">Delhi 🇮🇳</span>
               </div>
-            </div>
+            </PortraitFrame>
           </Reveal>
 
           <div className="flex flex-col gap-7">
@@ -268,7 +253,7 @@ export function About() {
                 <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" aria-hidden="true" />
                 <span className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" aria-hidden="true" />
                 <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" aria-hidden="true" />
-                <span className="ml-2 text-[11px] text-[#6b6862]">adarsh.py</span>
+                <span className="ml-2 text-[11px] text-[#96938a]">adarsh.py</span>
               </div>
               <pre className="whitespace-pre">
                 <code>
@@ -390,6 +375,13 @@ export function About() {
             }
             description="All eleven places I actually show up — from the profile README's full connect list."
           />
+          <div className="mb-10 border-y border-white/10 py-8">
+            <AvatarType
+              src={`${data.profile.avatar_url}?s=900`}
+              text="ADARSH"
+              caption="The same face, set in type — the GitHub avatar, used as a wordmark"
+            />
+          </div>
           <IdGrid />
         </div>
       </section>

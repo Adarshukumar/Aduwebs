@@ -66,6 +66,23 @@ export function prefersReducedMotion(): boolean {
   );
 }
 
+/**
+ * Does this device have a real pointer?
+ *
+ * Some browsers — and every headless one — report neither `pointer: fine` nor
+ * `any-pointer: fine`, which would silently remove the dragon from a desktop.
+ * So: accept either signal, and let `?cursor=dragon` (or `?cursor=ring`) force
+ * the decision when the detection is wrong.
+ */
 export function isFinePointer(): boolean {
-  return typeof window !== "undefined" && window.matchMedia("(pointer: fine)").matches;
+  if (typeof window === "undefined") return false;
+
+  const forced = new URLSearchParams(window.location.search).get("cursor");
+  if (forced === "dragon") return true;
+  if (forced === "ring") return false;
+
+  return (
+    window.matchMedia("(any-pointer: fine)").matches ||
+    window.matchMedia("(pointer: fine)").matches
+  );
 }
