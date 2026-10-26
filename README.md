@@ -1,136 +1,67 @@
-# Aduwebs — Adarsh Kumar's portfolio
+# Adarsh Kumar — Portfolio
 
-A multi-page portfolio for **Adarsh Kumar** — product designer, creative developer and AI/ML builder from Delhi. Built as a Vite + React + TypeScript SPA, styled with Tailwind CSS v4 and animated with Framer Motion and hand-written CSS.
+An interactive 3D portfolio: a real-time rendered character, GSAP scroll choreography,
+a physics-driven tech stack and a custom cursor. Built with React, TypeScript, Vite,
+Three.js, React Three Fiber and GSAP.
 
-**Live:** [https://adarshkumar-one.vercel.app](https://adarshkumar-one.vercel.app)
+**Live:** [adarshkumar-one.vercel.app](https://adarshkumar-one.vercel.app)
+
+---
+
+## What's inside
+
+| Section | What it does |
+| --- | --- |
+| Loading | decrypts the character model (AES-CBC), then drives a real upload-style counter |
+| Landing | name, role, and a masked word sweep over the character |
+| About | who I am, in full |
+| What I Do | AI engineering / design-led web development |
+| Career | 2023 → now: foundations, freelance since Jan 2024, AI work since 2025, education |
+| Work | 48-model chat router, gallery server, HF Spaces, client websites |
+| Tech Stack | physics spheres you can knock around |
+| Contact | links, education, credits |
+
+The character is a GLB encrypted with AES-CBC and decrypted in the browser at load
+(`src/components/Character/utils/decrypt.ts`) — the model file alone is not usable.
+
+---
+
+## Run it
+
+```bash
+npm ci
+npm run dev      # http://localhost:5173
+npm run build    # tsc -b && vite build → dist/
+npm run preview
+```
+
+Deploys to Vercel as a static Vite build (`dist/`).
 
 ---
 
 ## Stack
 
-| Layer | Choice |
-| --- | --- |
-| Build tool | Vite 7 |
-| UI | React 19 + TypeScript 5.9 |
-| Routing | React Router 7 (client-side, SPA rewrites on Vercel) |
-| Styling | Tailwind CSS v4 (`@tailwindcss/vite`) + a token-driven `src/index.css` |
-| Motion | Framer Motion, IntersectionObserver reveals, CSS keyframes |
-| Icons | lucide-react + a few hand-rolled brand icons |
-| Data | Static content in `src/lib/data.ts`, live GitHub data in `src/lib/github.ts` |
-| Lint | ESLint 9 (flat config) + typescript-eslint |
-
-No backend. The only network call is the public GitHub API.
-
----
-
-## Routes
-
-| Path | Page | What it is |
-| --- | --- | --- |
-| `/` | `pages/Home.tsx` | Hero, about, services, skills, featured work, GitHub profile card, social ID grid, process, a compact memory game, contact band |
-| `/about` | `pages/About.tsx` | Full story, facts, timeline, principles, services, all social profiles |
-| `/work` | `pages/Work.tsx` | Six featured projects plus the complete live GitHub repository shelf with search, language/family filters and sorting |
-| `/stack` | `pages/Stack.tsx` | Every skill grouped by language / AI / frontend / data, with confidence bars and a toolbox list |
-| `/lab` | `pages/Lab.tsx` | Live AI tools, an ingest → embed → route → serve pipeline explainer, experiments |
-| `/arcade` | `pages/Arcade.tsx` | Memory game with three difficulties plus a Simon-style sequence game, both with local best scores |
-| `/contact` | `pages/Contact.tsx` | Contact form (composes a `mailto:`), socials, FAQ, availability |
-| `*` | `pages/NotFound.tsx` | Paper-styled 404 |
-
-Every route renders inside `components/layout/Layout.tsx`, which provides the "paper poster in a dark frame" shell, the sticky header, the footer, the intro loader, the custom cursor ring, the page-wipe transition and the scroll rail.
-
----
-
-## How the content layer works
-
-`src/lib/data.ts` is the single source of truth for copy: profile, socials, skills, services, process, featured projects, repository fallbacks, lab tools, timeline, principles, FAQ, nav links and game data. Editing a string there updates it everywhere.
-
-`src/lib/github.ts` fetches the profile and up to 100 public repositories from the GitHub REST API (`Adarshukumar`), derives stars and language stats, caches the payload in `localStorage` for five minutes and falls back to cached data and then to `REPO_FALLBACK` when the API is unavailable or rate-limited. The header shows a "Live from api.github.com" badge when a real fetch succeeded.
-
-Global state lives in three small contexts: `ThemeContext` (light/dark, persisted), `ToastContext` (status messages) and `GithubContext` (profile, repos, sync status, manual re-sync).
-
----
-
-## Project structure
-
-```
-src/
-├── App.tsx                  # route table + providers
-├── main.tsx                 # root render, BrowserRouter
-├── index.css                # design tokens, Tailwind theme, all custom CSS
-├── components/
-│   ├── layout/              # Header, Footer, Layout shell
-│   ├── home/Hero.tsx        # hero section
-│   ├── fx/Effects.tsx       # intro loader, cursor ring, page wipe, scroll rail
-│   ├── ui/                  # Reveal, Magnetic, Marquee, Poster, ImageBand, SectionHeading
-│   ├── profiles/            # GithubProfileCard, IdGrid (social cards)
-│   ├── skills/SkillRow.tsx
-│   ├── arcade/MemoryGame.tsx
-│   ├── contact/ContactBand.tsx
-│   └── Icons.tsx            # brand icons (HuggingFace, etc.)
-├── context/                 # theme, toast, GitHub providers
-├── lib/                     # data, github client, helpers
-└── pages/                   # Home, About, Work, Stack, Lab, Arcade, Contact, NotFound
-public/img/                  # photographic bands (code, delhi, desk, neural)
-```
-
----
-
-## Design system
-
-All colors, fonts and spacing tokens are CSS custom properties in `src/index.css`, exposed to Tailwind through `@theme inline` (`bg-paper`, `text-ink`, `border-line`, `text-acid`, …). Light and dark themes swap the token values under `html.dark` — no duplicated component classes.
-
-Type: Pixelify Sans for display, DM Sans for body, Instrument Serif for editorial italics, Allura for the AK monogram, JetBrains Mono for code. Fonts load from Google Fonts in `index.html`.
-
-Accessibility and motion: semantic landmarks, labelled sections, focus-visible styles, `aria-label` on icon-only controls, live regions for toasts, and every animation respects `prefers-reduced-motion`.
-
----
-
-## Running locally
-
-```bash
-npm install
-npm run dev      # http://localhost:5173
-npm run build    # tsc -b && vite build → dist/
-npm run preview  # serve the production build
-npm run lint     # ESLint
-```
-
-Node 20+ recommended (Vercel builds this project on Node 24).
-
----
-
-## Deploying to Vercel
-
-The repo ships a hardened `vercel.json`:
-
-- framework `vite`, `npm ci` install, `npm run build`, output `dist`
-- SPA rewrite: every unknown path falls back to `index.html`
-- immutable one-year caching for hashed `/assets/*`, a week for `/img/*`
-- `nosniff`, `SAMEORIGIN`, strict referrer policy and a locked-down permissions policy
-
-The live project is **`adarshkumar`** (`prj_dbpxsExpxWDjhlbtpxaFQFSzGnwc`) in the `devadarshukumar-6419` Vercel account, with the production alias **https://adarshkumar-one.vercel.app**.
-
-The older **`adarshu`** project (`prj_IArXIau0UCA3azcZd0mI8YgC884C`, alias `adarshu.vercel.app`) is left untouched and serves the pre-rebuild site.
-
-### The opening
-
-The site opens on the avatar, and the avatar is what you land on.
-
-`?intro=v2` (default) runs the full arrival. `?intro=classic` plays the old monogram curtain. `?intro=off` skips straight to the page — all three are useful for comparing recordings side by side.
-
-Redeploy from this checkout:
-
-```bash
-npx vercel link          # once — pick the existing "adarshu" project
-npx vercel --prod        # build + deploy to production
-```
-
-A GitHub-integration deploy (push-to-deploy) can be enabled on the project once the Vercel GitHub app is installed for the `Adarshukumar` account; until then deploy from the CLI or create a deployment against the repository/branch.
+React 18 · TypeScript · Vite · Three.js · React Three Fiber · drei · postprocessing
+· rapier / cannon · GSAP + ScrollTrigger + ScrollSmoother · react-icons ·
+react-fast-marquee · @vercel/analytics
 
 ---
 
 ## Notes
 
-- The site is fully static; there are no server functions or environment variables to configure.
-- GitHub API requests are unauthenticated, so the UI degrades gracefully to cached/fallback data when the rate limit is hit.
-- `npm run lint` reports a handful of stylistic rules from `eslint-plugin-react-hooks` (set-state-in-effect) and `react-refresh` (context files export hooks), plus historically unused symbols that have now been removed. These do not affect the build.
+- `public/models/character.enc` is the encrypted character; `encrypt.cjs` documents the
+  format (16-byte IV prefix, then AES-CBC ciphertext).
+- Geist is loaded from Google Fonts in `src/index.css`. If it is blocked, the site
+  falls back to the system sans — everything still works.
+- `public/Adarsh-Kumar-CV.pdf` is the résumé served by the RESUME button.
+
+---
+
+## Contact
+
+**Adarsh Kumar** — AI Developer & ML Engineer, Delhi, India
+devadarshukumar@gmail.com ·
+[GitHub](https://github.com/Adarshukumar) ·
+[LinkedIn](https://www.linkedin.com/in/adarshu07/) ·
+[Hugging Face](https://huggingface.co/AdarshJi) ·
+[Instagram](https://www.instagram.com/adarshu.io/)
