@@ -1850,8 +1850,401 @@ body.dragon-ready ::-webkit-scrollbar-thumb {
   display: grid;
   place-items: center;
   background: #0b0b0b;
-  clip-path: circle(var(--iris, 150%) at 50% 50%);
+  /* The curtain opens out of the hero portrait's position (set in JS), so the
+     avatar you just met is the avatar you land on. */
+  clip-path: circle(var(--iris, 150%) at var(--iris-x, 50%) var(--iris-y, 50%));
   will-change: clip-path, opacity;
+}
+
+/* ───────────────  the arrival (intro v2)  ─────────────── */
+
+.intro-loader-v2 {
+  --reveal: 0%;
+  --develop: 0;
+  --tilt-x: 0deg;
+  --tilt-y: 0deg;
+  overflow: hidden;
+  background: transparent;
+  /* The iris lives on .iv-veil, so the avatar can fly out through a gap that
+     has already been clipped away. */
+  clip-path: none;
+}
+
+.iv-veil {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(120% 90% at 50% 34%, #16180f 0%, #0b0b0b 52%, #070707 100%);
+  clip-path: circle(var(--iris, 150%) at var(--iris-x, 50%) var(--iris-y, 50%));
+  will-change: clip-path;
+  pointer-events: none;
+}
+
+.iv-stage {
+  position: relative;
+  z-index: 1;
+  transition: opacity 0.3s ease, transform 0.5s var(--ease);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(18px, 3vh, 30px);
+  padding: 0 20px;
+  opacity: 0;
+  transform-style: preserve-3d;
+  perspective: 900px;
+}
+
+/* soft acid pool behind the portrait — the "stage light" */
+.iv-halo {
+  position: absolute;
+  top: clamp(-40px, -4vh, -10px);
+  left: 50%;
+  width: min(74vmin, 520px);
+  aspect-ratio: 1;
+  translate: -50% 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(200, 255, 55, 0.16) 0%,
+    rgba(200, 255, 55, 0.06) 38%,
+    transparent 68%
+  );
+  filter: blur(8px);
+  animation: iv-halo 5.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes iv-halo {
+  0%, 100% { opacity: 0.65; scale: 1; }
+  50% { opacity: 1; scale: 1.04; }
+}
+
+.iv-grid {
+  position: absolute;
+  inset: -20% -40%;
+  background-image: radial-gradient(rgba(244, 241, 233, 0.14) 1px, transparent 1.2px);
+  background-size: 15px 15px;
+  mask-image: radial-gradient(closest-side at 50% 45%, #000 0%, transparent 78%);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.iv-frame {
+  position: relative;
+  padding: 14px;
+  transform: rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
+  transform-style: preserve-3d;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+/* ── the handoff: the avatar *travels* into the hero portrait ── */
+
+.intro-loader-v2.is-flying .iv-stage {
+  pointer-events: none;
+}
+
+.intro-loader-v2.is-flying .iv-frame {
+  transform: translate3d(var(--fly-x, 0), var(--fly-y, 0), 0) scale(var(--fly-s, 1));
+  transition: transform 0.95s cubic-bezier(0.65, 0, 0.2, 1);
+}
+
+.intro-loader-v2.is-flying .iv-word,
+.intro-loader-v2.is-flying .iv-status,
+.intro-loader-v2.is-flying .iv-tag,
+.intro-loader-v2.is-flying .iv-tick,
+.intro-loader-v2.is-flying .iv-orbit,
+.intro-loader-v2.is-flying .iv-ring,
+.intro-loader-v2.is-flying .iv-scan,
+.intro-loader-v2.is-flying .iv-grain {
+  opacity: 0;
+  transition: opacity 0.42s ease;
+}
+
+.intro-loader-v2.is-flying .iv-portrait {
+  border-radius: 18px;
+  transition: border-radius 0.95s cubic-bezier(0.65, 0, 0.2, 1);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.16);
+  border-color: transparent;
+}
+
+/* No reachable destination (phone, portrait below the fold): the avatar doesn't
+   teleport across the screen, it just leaves — the eye follows the dissolve. */
+.intro-loader-v2.is-dissolving .iv-stage {
+  opacity: 0;
+  transform: scale(0.96) translateY(-10px);
+  transition: opacity 0.55s var(--ease), transform 0.7s var(--ease);
+}
+.intro-loader-v2.is-dissolving .iv-veil {
+  opacity: 0;
+  transition: opacity 0.5s ease 0.1s;
+}
+
+/* the backdrop dissolves a beat behind the avatar */
+.intro-loader-v2.is-flying .iv-veil {
+  opacity: 0;
+  transition: opacity 0.55s ease 0.12s;
+}
+
+.iv-portrait {
+  position: relative;
+  width: clamp(186px, 31vmin, 258px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #101010;
+  border: 1px solid rgba(244, 241, 233, 0.16);
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(200, 255, 55, 0.12),
+    inset 0 0 60px rgba(0, 0, 0, 0.5);
+  /* the figure rises through a scan field instead of popping in */
+  -webkit-mask-image: linear-gradient(
+    to top,
+    #000 0%,
+    #000 calc(var(--reveal) - 14%),
+    transparent var(--reveal)
+  );
+  mask-image: linear-gradient(
+    to top,
+    #000 0%,
+    #000 calc(var(--reveal) - 14%),
+    transparent var(--reveal)
+  );
+  opacity: 0;
+  transform: translateY(30px) scale(0.9);
+  will-change: transform, opacity, mask-image;
+}
+
+.iv-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 32%;
+  transform: scale(1.04);
+  /* develops from duotone to colour as the counter climbs */
+  filter: grayscale(calc(1 - var(--develop))) saturate(calc(0.35 + var(--develop) * 1.05))
+    contrast(1.06) brightness(calc(1.28 - var(--develop) * 0.14));
+}
+
+.iv-tint {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(150deg, #ffffff 0%, #c8ff37 58%, #86bb14 100%);
+  mix-blend-mode: color;
+  opacity: calc(0.72 * (1 - var(--develop)));
+  pointer-events: none;
+}
+
+.iv-grain {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(rgba(10, 10, 10, 0.5) 0.7px, transparent 0.9px),
+    repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 3px);
+  background-size: 4px 4px, auto;
+  mix-blend-mode: multiply;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.iv-scan {
+  position: absolute;
+  left: -10%;
+  right: -10%;
+  top: -25%;
+  height: 26%;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(200, 255, 55, 0.35) 62%,
+    rgba(232, 255, 154, 0.8) 92%,
+    transparent
+  );
+  mix-blend-mode: screen;
+  filter: blur(1px);
+  pointer-events: none;
+}
+
+.iv-ring {
+  position: absolute;
+  inset: 2px;
+  width: calc(100% - 4px);
+  height: calc(100% - 4px);
+  transform: rotate(-90deg);
+  overflow: visible;
+  pointer-events: none;
+}
+
+.iv-ring-track {
+  fill: none;
+  stroke: rgba(244, 241, 233, 0.12);
+  stroke-width: 1;
+}
+
+.iv-ring-fill {
+  fill: none;
+  stroke: #c8ff37;
+  stroke-width: 2;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 6px rgba(200, 255, 55, 0.6));
+}
+
+.iv-orbit {
+  position: absolute;
+  inset: -20px;
+  border-radius: 50%;
+  border: 1px dashed rgba(244, 241, 233, 0.13);
+  animation: iv-orbit 26s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes iv-orbit {
+  to { rotate: 360deg; }
+}
+
+/* HUD ticks + tags — the same vocabulary as the hero portrait card */
+.iv-tick {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border: 1px solid rgba(244, 241, 233, 0.5);
+  z-index: 2;
+}
+.iv-tick.tl { top: 0; left: 0; border-right: 0; border-bottom: 0; }
+.iv-tick.tr { top: 0; right: 0; border-left: 0; border-bottom: 0; }
+.iv-tick.bl { bottom: 0; left: 0; border-right: 0; border-top: 0; }
+.iv-tick.br { bottom: 0; right: 0; border-left: 0; border-top: 0; }
+
+.iv-tag {
+  position: absolute;
+  top: 16px;
+  left: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(244, 241, 233, 0.55);
+  background: #0b0b0b;
+  padding: 2px 8px;
+  z-index: 2;
+}
+
+.iv-tag--right {
+  left: auto;
+  right: 24px;
+  color: #d9ff7a;
+}
+
+.iv-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #c8ff37;
+  box-shadow: 0 0 0 3px rgba(200, 255, 55, 0.22);
+}
+
+.iv-word {
+  display: flex;
+  gap: 0.06em;
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 4.4vw, 2.5rem);
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #f4f1e9;
+  white-space: pre;
+}
+
+.iv-word span {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(14px);
+  filter: blur(8px);
+  will-change: transform, opacity, filter;
+}
+
+/* the two word-space letters: give them a real gap */
+.iv-word span:nth-child(7),
+.iv-word span:nth-child(13) {
+  width: 0.42em;
+}
+
+.iv-status {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: min(76vw, 300px);
+}
+
+.iv-kicker {
+  font-family: var(--font-display);
+  font-size: 9.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(244, 241, 233, 0.5);
+  white-space: nowrap;
+}
+
+.iv-rule {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(200, 255, 55, 0.85), rgba(244, 241, 233, 0.18));
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+.iv-count {
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: #f4f1e9;
+}
+
+/* ── handoff: the hero portrait inherits the arrival ── */
+
+body.intro-handoff .portrait-hero .portrait-plane,
+body.intro-handoff .portrait-story .portrait-plane {
+  animation: portrait-arrive 1.05s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes portrait-arrive {
+  0% {
+    opacity: 0;
+    transform: scale(1.04);
+    filter: brightness(1.5) saturate(0.55);
+  }
+  55% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .iv-halo,
+  .iv-orbit {
+    animation: none;
+  }
+  .iv-portrait {
+    opacity: 1;
+    transform: none;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .iv-word span {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
 }
 
 .loader-inner {
@@ -2199,4 +2592,36 @@ body.ready .line-mask > span {
    follow the theme and lean on the pulse dot for the acid accent. */
 .availability-label {
   color: var(--ink);
+}
+
+
+/* ───────────────  hero kicker: name, then a typed line  ─────────────── */
+
+/* The typewriter grows character by character; on a phone it needs its own
+   line or the last words get clipped by the viewport. */
+.kicker-stack {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 10px;
+}
+
+.kicker-line {
+  display: inline-flex;
+  align-items: baseline;
+  min-height: 1.1em;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .kicker-stack {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  .kicker-line {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }

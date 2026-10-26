@@ -74,17 +74,19 @@ export function Hero() {
 
       <div className="relative grid gap-10 lg:grid-cols-[1.42fr_0.72fr] lg:gap-16">
         <div>
-          <p className="hero-fade kicker mb-5">
-            <span className="text-muted">Hello — I'm {PROFILE.name} · </span>
-            <Typewriter
-              className="!text-ink"
-              lines={[
-                PROFILE.role,
-                PROFILE.roleAlt,
-                "AI tools · websites · motion",
-                "Delhi → anywhere",
-              ]}
-            />
+          <p className="hero-fade kicker kicker-stack mb-5">
+            <span className="text-muted">Hello — I&apos;m {PROFILE.name}</span>
+            <span className="kicker-line">
+              <Typewriter
+                className="!text-ink"
+                lines={[
+                  PROFILE.role,
+                  PROFILE.roleAlt,
+                  "AI tools · websites · motion",
+                  "Delhi → anywhere",
+                ]}
+              />
+            </span>
           </p>
 
           <h1 className="hero-title" aria-label={PROFILE.name}>
