@@ -2,7 +2,7 @@
 
 A multi-page portfolio for **Adarsh Kumar** — product designer, creative developer and AI/ML builder from Delhi. Built as a Vite + React + TypeScript SPA, styled with Tailwind CSS v4 and animated with Framer Motion and hand-written CSS.
 
-**Live:** [https://adarshu.vercel.app](https://adarshu.vercel.app)
+**Live:** [https://adarshkumar-one.vercel.app](https://adarshkumar-one.vercel.app)
 
 ---
 
@@ -108,7 +108,15 @@ The repo ships a hardened `vercel.json`:
 - immutable one-year caching for hashed `/assets/*`, a week for `/img/*`
 - `nosniff`, `SAMEORIGIN`, strict referrer policy and a locked-down permissions policy
 
-The live project is **`adarshu`** (`prj_IArXIau0UCA3azcZd0mI8YgC884C`, renamed from `aduwebs` on 21 Oct 2026) in the `devadarshukumar-6419` Vercel account, with the production alias **https://adarshu.vercel.app**.
+The live project is **`adarshkumar`** (`prj_dbpxsExpxWDjhlbtpxaFQFSzGnwc`) in the `devadarshukumar-6419` Vercel account, with the production alias **https://adarshkumar-one.vercel.app**.
+
+The older **`adarshu`** project (`prj_IArXIau0UCA3azcZd0mI8YgC884C`, alias `adarshu.vercel.app`) is left untouched and serves the pre-rebuild site.
+
+### The opening
+
+The site opens on the avatar, and the avatar is what you land on.
+
+`?intro=v2` (default) runs the full arrival. `?intro=classic` plays the old monogram curtain. `?intro=off` skips straight to the page — all three are useful for comparing recordings side by side.
 
 Redeploy from this checkout:
 
