@@ -19,7 +19,7 @@ const Contact = () => {
                 rel="noreferrer"
                 data-cursor="disable"
               >
-                LinkedIn — Adarsh-Kumar
+                LinkedIn — adarshu07
               </a>
 
               {" | "}

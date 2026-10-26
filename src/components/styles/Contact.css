@@ -17,6 +17,20 @@
 .contact-flex {
   display: flex;
   justify-content: space-between;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+/* The connect copy runs longer than the layout was drawn for — let it take the
+   free space instead of colliding with the social column. */
+.contact-flex > .contact-box:first-child {
+  flex: 1 1 360px;
+  max-width: 640px;
+}
+
+.contact-flex > .contact-box:last-child {
+  flex: 0 0 220px;
+  margin-left: auto;
 }
 
 .contact-flex h4 {
