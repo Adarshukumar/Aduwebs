@@ -55,6 +55,18 @@ export function IntroLoader() {
   const classicRuleRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
+    // ?intro=off: there is no curtain to lift, so the page has to be told it is
+    // ready from here — nothing else will ever call finish().
+    if (mode === "off") {
+      document.body.classList.add("ready");
+      try {
+        sessionStorage.setItem(SESSION_KEY, "true");
+      } catch {
+        /* private mode */
+      }
+      return;
+    }
+
     const root = rootRef.current;
     if (!root || !mounted) return;
 
@@ -95,6 +107,7 @@ export function IntroLoader() {
     /* ─────────────────────  classic curtain  ───────────────────── */
     if (variant === "classic") {
       const counter = { value: 0 };
+      // the classic curtain is a percentage iris on the loader itself
       const iris = { value: 150 };
       const timeline = createTimeline({ defaults: { ease: "outExpo" } });
       timeline
@@ -149,6 +162,8 @@ export function IntroLoader() {
     const ring = ringRef.current;
     const word = wordRef.current;
     const letters = word ? Array.from(word.querySelectorAll<HTMLElement>("[data-letter]")) : [];
+    const orbit = stage.querySelector<HTMLElement>(".iv-orbit");
+    const hudChips = [...stage.querySelectorAll<HTMLElement>(".iv-tag, .iv-tick, .iv-status")];
 
     // Ring geometry drives the aperture progress.
     const radius = ring ? Number(ring.getAttribute("r") ?? 96) : 96;
@@ -159,11 +174,12 @@ export function IntroLoader() {
     }
 
     // The curtain opens from wherever the hero portrait actually is.
+    // The aperture opens *from the avatar* — the face is the light source. The
+    // avatar then flies to the hero portrait, which carries the eye instead.
     const aimIris = () => {
-      const target = document.querySelector<HTMLElement>(".portrait-hero, .portrait-story");
-      const rect = target?.getBoundingClientRect();
+      const rect = stage.querySelector<HTMLElement>(".iv-portrait")?.getBoundingClientRect();
       const x = rect && rect.width > 40 ? rect.left + rect.width / 2 : window.innerWidth / 2;
-      const y = rect && rect.height > 40 ? rect.top + rect.height / 2 : window.innerHeight * 0.42;
+      const y = rect && rect.height > 40 ? rect.top + rect.height / 2 : window.innerHeight / 2;
       root.style.setProperty("--iris-x", `${Math.round(x)}px`);
       root.style.setProperty("--iris-y", `${Math.round(y)}px`);
     };
@@ -173,7 +189,7 @@ export function IntroLoader() {
     // Pointer tilt on the avatar — the one flourish that makes it feel physical.
     let tiltRaf = 0;
     const onMove = (event: PointerEvent) => {
-      if (!isFinePointer() || tiltRaf) return;
+      if (!isFinePointer() || tiltRaf || root.classList.contains("is-flying")) return;
       tiltRaf = requestAnimationFrame(() => {
         tiltRaf = 0;
         const px = event.clientX / window.innerWidth - 0.5;
@@ -185,7 +201,9 @@ export function IntroLoader() {
     window.addEventListener("pointermove", onMove, { passive: true });
 
     const progress = { value: 0 };
-    const iris = { value: 150 };
+    // radius in px, grown from 0 to past the far corner
+    const iris = { value: 0 };
+    const irisMax = () => Math.hypot(window.innerWidth, window.innerHeight) * 1.05;
     const hold = { value: 0 };
 
     const timeline = createTimeline({ defaults: { ease: "outExpo" } });
@@ -224,7 +242,20 @@ export function IntroLoader() {
       )
       .add(kickerRef.current ?? root, { opacity: [1, 0], duration: 160, ease: "linear" }, 930)
       .add(hold, { value: 1, duration: 260, ease: "linear" }, 1120)
-      .add(portrait, { scale: [1, 1.07], duration: 620 }, 1180);
+      .add(portrait, { scale: [1, 1.07], duration: 620 }, 1180)
+      // The curtain is about to open onto a cream page, so the cream HUD has to
+      // leave first — otherwise the name dissolves into the paper it lands on.
+      .add(
+        [
+          ...(word ? [word] : []),
+          ...(kickerRef.current ? [kickerRef.current] : []),
+          ...hudChips,
+          ...(ring ? [ring] : []),
+          ...(orbit ? [orbit] : []),
+        ],
+        { opacity: [1, 0], duration: 380, ease: "inOutQuad" },
+        1580
+      );
 
     // "Welcome" replaces "loading" after the fade has fully landed, so anime is
     // no longer writing opacity and the swap cannot be overwritten.
@@ -245,11 +276,13 @@ export function IntroLoader() {
      * instead of two unrelated screens.
      */
     const handoff = () => {
-      const frame = stage.querySelector<HTMLElement>(".iv-frame");
+      // Measure the *portrait circle*, not the padded frame — the frame loses its
+      // padding in flight so the card it becomes has the same footprint.
+      const face = stage.querySelector<HTMLElement>(".iv-portrait");
       const target = [...document.querySelectorAll<HTMLElement>(".portrait-hero, .portrait-story")].find(
         (el) => el.getBoundingClientRect().width > 60
       );
-      const source = frame?.getBoundingClientRect();
+      const source = face?.getBoundingClientRect();
       const dest = target?.getBoundingClientRect();
 
       // Fly only when the destination is properly on screen. On a phone the
@@ -258,16 +291,22 @@ export function IntroLoader() {
       const reachable =
         source && dest && dest.top > 0 && dest.top < window.innerHeight * 0.72 && dest.width > 120;
       if (reachable) {
-        const scale = Math.min(dest.width / (source.width * 0.82), 1.9);
+        // The card grows to the hero portrait's exact box (so the photo keeps its
+        // aspect through object-fit: cover) and travels to that box's centre.
         const dx = dest.left + dest.width / 2 - (source.left + source.width / 2);
         const dy = dest.top + dest.height / 2 - (source.top + source.height / 2);
         root.style.setProperty("--fly-x", `${dx.toFixed(1)}px`);
         root.style.setProperty("--fly-y", `${dy.toFixed(1)}px`);
-        root.style.setProperty("--fly-s", `${scale.toFixed(3)}`);
+        root.style.setProperty("--fly-w", `${dest.width.toFixed(1)}px`);
+        // height is derived from the ratio, so the card keeps its proportions
+        // while it grows and still lands on the hero's exact box
+        root.style.setProperty("--fly-ar", `${dest.width.toFixed(2)} / ${dest.height.toFixed(2)}`);
       }
-      // Let the hero fade up underneath while the avatar is still in the air,
-      // so the frame it lands in is already there.
       document.body.classList.add("ready");
+      // drop the idle breathing zoom, or the card lands 7% too big
+      if (portraitRef.current) {
+        animate(portraitRef.current, { scale: 1, duration: 240, ease: "outQuad" });
+      }
       root.classList.add(reachable ? "is-flying" : "is-dissolving");
       if (!reachable && stage) {
         // anime owns .iv-stage's inline opacity (the entrance wrote it), so the
@@ -279,16 +318,20 @@ export function IntroLoader() {
       window.setTimeout(() => {
         document.body.classList.remove("intro-handoff");
         finish();
-      }, 900);
+      }, 860);
     };
+
+    // Let the page build itself behind the curtain: the reveal then lands on a
+    // hero that is already assembling, instead of an empty sheet of paper.
+    const readyUp = window.setTimeout(() => document.body.classList.add("ready"), 1180);
 
     const IRIS_AT = 1620;
     const irisAnim = animate(iris, {
-      value: 0,
+      value: irisMax(),
       duration: 760,
       delay: IRIS_AT,
       ease: "inOutQuart",
-      onUpdate: () => root.style.setProperty("--iris", `${iris.value.toFixed(2)}%`),
+      onUpdate: () => root.style.setProperty("--iris-px", `${Math.round(iris.value)}px`),
       onComplete: handoff,
     });
 
@@ -296,6 +339,7 @@ export function IntroLoader() {
       timeline.pause();
       irisAnim.pause();
       window.clearTimeout(welcome);
+      window.clearTimeout(readyUp);
       skipAll();
     };
     window.addEventListener("pointerdown", skip, { once: true });
@@ -304,6 +348,7 @@ export function IntroLoader() {
 
     return () => {
       window.clearTimeout(welcome);
+      window.clearTimeout(readyUp);
       timeline.revert();
       irisAnim.revert();
       window.removeEventListener("resize", aimIris);
@@ -313,7 +358,7 @@ export function IntroLoader() {
       window.removeEventListener("wheel", skip);
       if (tiltRaf) cancelAnimationFrame(tiltRaf);
     };
-  }, [mounted, variant, forced]);
+  }, [mounted, variant, forced, mode]);
 
   if (!mounted) return null;
 
