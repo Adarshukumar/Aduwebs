@@ -17,6 +17,7 @@ const SECTIONS = [
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [active, setActive] = useState("");
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     smoother = ScrollSmoother.create({
@@ -116,7 +117,24 @@ const Navbar = () => {
           linkedin.com/in/adarshu07
         </a>
 
-        <nav aria-label="Sections">
+        <button
+          type="button"
+          className={`navbar-toggle${menuOpen ? " is-open" : ""}`}
+          aria-expanded={menuOpen}
+          aria-controls="navbar-menu"
+          aria-label={menuOpen ? "Close menu" : "Open menu"}
+          onClick={() => setMenuOpen((open) => !open)}
+          data-cursor="disable"
+        >
+          <span aria-hidden="true" />
+          <span aria-hidden="true" />
+        </button>
+
+        <nav
+          id="navbar-menu"
+          aria-label="Sections"
+          className={menuOpen ? "is-open" : undefined}
+        >
           <ul>
             {SECTIONS.map((section) => (
               <li key={section.id}>
@@ -125,6 +143,7 @@ const Navbar = () => {
                   href={`#${section.id}`}
                   className={active === section.id ? "is-active" : undefined}
                   aria-current={active === section.id ? "true" : undefined}
+                  onClick={() => setMenuOpen(false)}
                 >
                   <HoverLinks text={section.label} />
                 </a>
@@ -137,8 +156,10 @@ const Navbar = () => {
                 rel="noreferrer"
                 className="navbar-resume"
                 data-cursor="disable"
+                onClick={() => setMenuOpen(false)}
               >
-                Résumé
+                <span className="navbar-resume-full">Résumé</span>
+                <span className="navbar-resume-short">CV</span>
               </a>
             </li>
           </ul>

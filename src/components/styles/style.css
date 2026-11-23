@@ -1,20 +1,43 @@
+/* A link whose label rolls up to reveal a second copy on hover.
+   Both halves live inside an overflow-hidden box; the inner track is
+   two stacked lines, so translating it by -50% swaps them. */
+
 .hover-link {
   position: relative;
-  display: flex;
-  text-wrap: nowrap;
+  display: inline-flex;
   overflow: hidden;
+  line-height: 1.25;
 }
+
 .hover-in {
   position: relative;
-  transition: 0.3s;
-}
-.hover-in div {
   display: flex;
+  flex-direction: column;
+  /* the roll distance is exactly one line — defined here so the hover
+     translate can't be defeated by an auto height */
+  --roll: 1.25em;
+  transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hover-in > span {
+  display: block;
+  white-space: nowrap;
+}
+
+/* the second line sits directly under the first, inside the mask */
+.hover-in > span:last-child {
   position: absolute;
   top: 100%;
   left: 0;
 }
+
 .hover-link:hover .hover-in {
-  transform: translateY(-100%);
+  transform: translateY(calc(-1 * var(--roll)));
   color: var(--accentColor);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hover-in {
+    transition: none;
+  }
 }

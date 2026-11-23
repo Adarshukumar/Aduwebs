@@ -300,7 +300,10 @@ h2.landing-roles {
   .character-model {
     height: 100vh;
     bottom: 0;
-    z-index: 11;
+    /* The character is a fixed layer. Keep it below the copy: the sections
+       after the hero create their own stacking context at z-index 20
+       (see index.css), so anything at 11 stays behind them. */
+    z-index: 4;
     position: fixed;
   }
 

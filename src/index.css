@@ -164,3 +164,40 @@ body {
     font-size: 40px;
   }
 }
+
+/* ============================================================
+   Stacking contract.
+   The 3D character is a fixed, full-viewport layer. Content
+   sections must sit above it, and must be opaque enough that
+   the character never shows through the copy.
+   ============================================================ */
+
+/* ScrollSmoother puts a transform on #smooth-content, which makes it a
+   stacking context. So bumping a section's z-index inside it does nothing
+   against the character, which lives outside. Lift the wrapper itself. */
+#smooth-wrapper {
+  position: relative;
+  z-index: 20;
+}
+
+.about-section,
+.whatIDO,
+.career-section,
+.work-section,
+.techstack,
+.contact-section {
+  position: relative;
+  z-index: 2;
+}
+
+@media screen and (min-width: 1025px) {
+  /* the hero owns the character; everything after it owns the screen */
+  .about-section,
+  .whatIDO,
+  .career-section,
+  .work-section,
+  .techstack,
+  .contact-section {
+    background-color: #050505;
+  }
+}

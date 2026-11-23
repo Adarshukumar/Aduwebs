@@ -101,3 +101,66 @@ div.resume-button span {
     margin-top: -1.5px;
   }
 }
+
+
+/* ============================================================
+   Phones.
+   The social rail is 60px from the left edge and the rotated
+   RESUME tab hangs off the right — on a 390px screen both land
+   on top of the copy. Hide the tab (the nav already carries a
+   Résumé link) and pull the icons into a horizontal strip.
+   ============================================================ */
+@media (max-width: 860px) {
+  .resume-button {
+    display: none;
+  }
+
+  /* the base rule hides the rail below 900px; phones need it visible,
+     just laid out across the bottom instead of down the side */
+  .icons-section {
+    bottom: 0;
+    z-index: 9998;
+    pointer-events: none;
+  }
+
+  .social-icons {
+    position: fixed;
+    display: flex;
+    left: 50%;
+    bottom: 12px;
+    top: auto;
+    transform: translateX(-50%);
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    padding: 7px 12px;
+    background: rgba(8, 9, 10, 0.86);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 999px;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    pointer-events: auto;
+  }
+
+  .social-icons > div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0;
+  }
+
+  .social-icons span {
+    width: 34px;
+    height: 34px;
+  }
+
+  .social-icons a {
+    position: relative;
+    left: auto;
+    top: auto;
+    transform: none;
+    font-size: 17px;
+    align-items: center;
+    justify-content: center;
+  }
+}

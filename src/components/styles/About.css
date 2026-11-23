@@ -1,181 +1,36 @@
 /* ============================================================
-   About — sticky label rail + one measure of text.
-   The old layout was a 500px column of 33px bold body copy pushed
-   to the right edge; it read as a wall and collided with the nav.
+   About.
+   A sticky label rail on the left, one readable measure on the
+   right, and the numbers pulled out as their own row.
    ============================================================ */
 
 .about-section {
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  place-items: center;
   position: relative;
+  opacity: 1;
+  height: auto;
   width: var(--cWidth);
   max-width: 1280px;
   margin: 0 auto;
-  padding: clamp(90px, 12vh, 150px) 0;
-}
-
-.about-grid {
-  display: grid;
-  grid-template-columns: minmax(200px, 0.62fr) minmax(0, 1.38fr);
-  gap: clamp(40px, 7vw, 110px);
-  align-items: start;
-}
-
-/* ── left rail ── */
-.about-aside {
-  position: sticky;
-  top: 130px;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.about-eyebrow {
-  margin: 0;
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.32em;
-  text-transform: uppercase;
-  color: var(--accentColor);
-}
-
-.about-lede {
-  margin: 0;
-  font-size: clamp(18px, 1.5vw, 22px);
-  line-height: 1.45;
-  color: #f0f0f0;
-  font-weight: 500;
-  max-width: 22ch;
-}
-
-.about-link {
-  align-self: flex-start;
-  margin-top: 6px;
-  padding-bottom: 4px;
-  font-size: 13px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #9a9a9a;
-  border-bottom: 1px solid rgba(94, 234, 212, 0.4);
-  transition: color 0.3s ease, border-color 0.3s ease;
-}
-
-.about-link:hover {
-  color: var(--accentColor);
-  border-color: var(--accentColor);
-}
-
-/* ── body copy: readable measure, sane weight ── */
-.about-body {
-  display: flex;
-  flex-direction: column;
-  gap: clamp(20px, 2.2vw, 30px);
-  max-width: 66ch;
-}
-
-.about-body p {
-  margin: 0;
-  font-size: clamp(15px, 1.12vw, 18px);
-  line-height: 1.72;
-  font-weight: 400;
-  letter-spacing: 0;
-  color: #b9b9b9;
-}
-
-.about-body strong {
-  color: #f2f2f2;
-  font-weight: 600;
-}
-
-.about-body-close {
-  padding-top: clamp(20px, 2.2vw, 30px);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* ── the numbers, pulled out of the prose ── */
-.about-stats {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1px;
-  margin: clamp(12px, 2vw, 24px) 0 0;
-  background: rgba(255, 255, 255, 0.09);
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-.about-stat {
-  background: #050505;
-  padding: clamp(16px, 1.6vw, 22px) clamp(12px, 1.2vw, 18px);
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.about-stat dt {
-  font-size: clamp(24px, 2.2vw, 32px);
-  font-weight: 600;
-  line-height: 1;
-  color: var(--accentColor);
-  letter-spacing: -0.02em;
-}
-
-.about-stat dd {
-  margin: 0;
-  font-size: 11.5px;
-  line-height: 1.45;
-  color: #8f8f8f;
-  letter-spacing: 0.02em;
-}
-
-/* ── responsive ── */
-@media only screen and (max-width: 1024px) {
-  .about-section {
-    padding: clamp(70px, 10vh, 110px) 0;
-  }
-
-  .about-grid {
-    grid-template-columns: 1fr;
-    gap: 34px;
-  }
-
-  .about-aside {
-    position: static;
-    gap: 14px;
-  }
-
-  .about-lede {
-    max-width: 30ch;
-  }
-}
-
-@media only screen and (max-width: 620px) {
-  .about-stats {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-/* ============================================================
-   The about panel.
-   The character fly-through used to push this section +30% and
-   fade it out, so the copy slid in and out of frame while you
-   were reading it. It is a solid plate now with its own ground,
-   sitting above the 3D layer, and it holds still.
-   ============================================================ */
-
-.about-section {
-  position: relative;
-  z-index: 12;
-  background-color: #050505;
+  padding: 140px 0 120px;
+  z-index: 2;
   isolation: isolate;
 }
 
-/* a soft seam so the panel reads as coming forward, not floating */
+/* a faint teal breath so the panel isn't a dead rectangle */
 .about-section::before {
   content: "";
   position: absolute;
   inset: 0;
   z-index: -1;
-  /* a faint teal breath only — no top-edge plate, which read as a seam */
-  background: radial-gradient(680px 400px at 10% 22%, rgba(94, 234, 212, 0.045), transparent 68%);
+  background: radial-gradient(
+    680px 420px at 8% 18%,
+    rgba(94, 234, 212, 0.05),
+    transparent 68%
+  );
   pointer-events: none;
 }
 
@@ -186,5 +41,308 @@
   right: 0;
   top: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 80px;
+  width: 100%;
+  align-items: start;
+}
+
+/* ── the left rail ── */
+.about-aside {
+  position: sticky;
+  top: 132px;
+  translate: 0 var(--about-shift, 0px);
+  transition: translate 0.15s linear;
+}
+
+.about-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accentColor);
+  margin: 0 0 22px;
+}
+
+.about-eyebrow-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accentColor);
+  box-shadow: 0 0 10px 1px rgba(94, 234, 212, 0.55);
+}
+
+.about-lede {
+  font-size: 25px;
+  line-height: 1.32;
+  letter-spacing: -0.022em;
+  font-weight: 500;
+  color: #f2f5f6;
+  margin: 0 0 30px;
+  text-wrap: balance;
+}
+
+.about-facts {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 0 0 30px;
+  border-top: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.about-fact {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 11px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+
+.about-fact dt {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: #6f7480;
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+
+.about-fact dd {
+  margin: 0;
+  color: #cfd3d6;
+  text-align: right;
+  text-wrap: balance;
+}
+
+.about-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: #050505;
+  background: var(--accentColor);
+  padding: 12px 18px;
+  border-radius: 999px;
+  font-weight: 600;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.3s ease, background-color 0.3s ease;
+}
+
+.about-link svg {
+  width: 13px;
+  height: 13px;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.about-link:hover {
+  color: #050505;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px -10px rgba(94, 234, 212, 0.7);
+  background: #7df0dd;
+}
+
+.about-link:hover svg {
+  transform: translate(2px, -2px);
+}
+
+/* ── the right column ── */
+.about-body {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  max-width: 68ch;
+}
+
+.about-body p {
+  font-size: 16.5px;
+  line-height: 1.72;
+  color: #b9bec4;
+  margin: 0;
+  text-wrap: pretty;
+}
+
+.about-body strong {
+  color: #f0f3f4;
+  font-weight: 600;
+}
+
+.about-lead {
+  font-size: 19px !important;
+  line-height: 1.6 !important;
+  color: #d5d9dd !important;
+}
+
+/* two short columns so the AI/web halves read as a pair, not one long block */
+.about-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 34px;
+  padding: 26px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.about-col h4 {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accentColor);
+  margin: 0 0 11px;
+}
+
+.about-col p {
+  font-size: 14.5px !important;
+  line-height: 1.68 !important;
+  color: #a9aeb4 !important;
+}
+
+.about-body-close {
+  border-left: 1px solid rgba(94, 234, 212, 0.3);
+  padding-left: 22px;
+  color: #a9aeb4 !important;
+  font-size: 15px !important;
+}
+
+/* ── the numbers ── */
+.about-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  margin: 4px 0 0;
+  background: rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.about-stat {
+  background: #08090a;
+  padding: 20px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  transition: background-color 0.35s ease;
+}
+
+.about-stat:hover {
+  background: #0c1011;
+}
+
+.about-stat dt {
+  font-size: 30px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--accentColor);
+  font-variant-numeric: tabular-nums;
+}
+
+.about-stat dd {
+  margin: 0;
+  font-size: 11.5px;
+  line-height: 1.42;
+  color: #82878d;
+  text-wrap: balance;
+}
+
+/* ── tablet ── */
+@media (max-width: 1100px) {
+  .about-grid {
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: 48px;
+  }
+
+  .about-lede {
+    font-size: 22px;
+  }
+
+  .about-split {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+}
+
+/* ── phone ── */
+@media (max-width: 860px) {
+  .about-section {
+    padding: 110px 0 90px;
+  }
+
+  .about-grid {
+    grid-template-columns: 1fr;
+    gap: 34px;
+  }
+
+  .about-aside {
+    position: relative;
+    top: 0;
+    translate: 0 0;
+    transition: none;
+  }
+
+  .about-lede {
+    font-size: 23px;
+    margin-bottom: 24px;
+  }
+
+  .about-body {
+    gap: 24px;
+  }
+
+  .about-body p {
+    font-size: 15.5px;
+  }
+
+  .about-lead {
+    font-size: 17px !important;
+  }
+
+  .about-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .about-stat {
+    padding: 17px 15px 15px;
+  }
+
+  .about-stat dt {
+    font-size: 26px;
+  }
+
+  .about-body-close {
+    padding-left: 16px;
+  }
+}
+
+@media (max-width: 460px) {
+  .about-fact {
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .about-fact dd {
+    text-align: left;
+  }
 }
