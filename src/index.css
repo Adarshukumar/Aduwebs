@@ -8,7 +8,7 @@
   line-height: 1.5;
   scroll-behavior: smooth;
   color-scheme: light dark;
-  color: #eae5ec;
+  color: #ececec;
   background-color: var(--backgroundColor);
 
   font-synthesis: none;
@@ -19,7 +19,8 @@
   -webkit-user-select: none;
   -moz-user-select: none;
   --accentColor: #5eead4;
-  --backgroundColor: #0a0e17;
+  /* true black, not navy — the 3D scene and the page share this value */
+  --backgroundColor: #050505;
   --vh: 100vh;
   --vh: 100svh;
 }

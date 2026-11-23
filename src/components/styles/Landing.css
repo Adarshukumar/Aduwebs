@@ -21,10 +21,11 @@
   position: fixed;
   width: 300px;
   height: 300px;
-  background-color: #22d3ee;
-  box-shadow: inset -50px 40px 50px rgba(0, 180, 180, 0.6);
-  filter: blur(60px);
+  background-color: #0d9488;
+  box-shadow: inset -50px 40px 50px rgba(0, 120, 120, 0.5);
+  filter: blur(80px);
   border-radius: 50%;
+  opacity: 0.32;
   animation: loadingCircle 5s linear infinite;
 }
 
@@ -61,10 +62,11 @@
   display: none;
   width: 300px;
   height: 300px;
-  background-color: #22d3ee;
-  box-shadow: inset -50px 40px 50px rgba(0, 180, 180, 0.6);
-  filter: blur(50px);
+  background-color: #0d9488;
+  box-shadow: inset -50px 40px 50px rgba(0, 120, 120, 0.5);
+  filter: blur(70px);
   border-radius: 50%;
+  opacity: 0.28;
   animation: loadingCircle2 5s linear infinite;
 }
 
@@ -94,10 +96,11 @@
   width: 400px;
   height: 400px;
   z-index: 1;
-  background-color: #22d3ee;
+  /* the rim light behind the character — a quiet teal wash, not a hard disc */
+  background-color: rgba(13, 148, 136, 0.55);
   transform: translate(-50%, 36%) scaleX(1.4);
-  box-shadow: inset 66px 35px 85px 0px rgba(0, 180, 180, 0.65);
-  filter: blur(50px);
+  box-shadow: inset 66px 35px 85px 0px rgba(0, 120, 120, 0.5);
+  filter: blur(90px);
   border-radius: 50%;
   top: 50%;
   left: 50%;
@@ -175,6 +178,12 @@
   left: 0;
 }
 
+@media screen and (min-width: 1025px) {
+  .landing-intro {
+    z-index: 9;
+  }
+}
+
 .landing-intro h2 {
   margin: 0;
   color: var(--accentColor);
@@ -213,53 +222,28 @@
   margin: 0;
 }
 
-.landing-info h2 {
-  margin: 0;
-  margin-top: -20px;
-  margin-left: 20px;
-  font-family: "Geist", sans-serif;
-  font-weight: 600;
-  font-size: 32px;
-  line-height: 40px;
-  position: relative;
+/* The two role words. One stack, one accent, no carousel and no gradient
+   overlay — the old markup stacked two copies of this and hid the bottom
+   with a mask, which is what made "DESIGNER" look chopped in half. */
+h2.landing-roles {
   display: flex;
-  flex-wrap: nowrap;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-}
-
-.landing-h2-info-1 {
-  position: absolute;
-  top: 0;
-}
-
-h2.landing-info-h2 {
-  color: #14b8a6;
-  font-size: 42px;
-  width: 120%;
-  margin: 0;
+  flex-direction: column;
+  margin: 4px 0 0;
   font-family: "Geist", sans-serif;
   font-weight: 600;
-  position: relative;
-  margin-left: -5px;
+  font-size: 42px;
+  line-height: 1.06;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
 }
 
-.landing-h2-2 {
-  position: absolute;
-  top: 0;
+.landing-role {
+  display: block;
+  white-space: nowrap;
 }
 
-.landing-info-h2::after {
-  content: "";
-  position: absolute;
-  width: 100%;
-  height: 120%;
-  z-index: 3;
-  background-image: linear-gradient(0deg,
-      var(--backgroundColor) 40%,
-      rgba(0, 0, 0, 0) 110%);
-  top: 0;
-  left: 0;
+.landing-role--accent {
+  color: var(--accentColor);
 }
 
 @media screen and (min-width: 500px) {
@@ -284,13 +268,8 @@ h2.landing-info-h2 {
     line-height: 30px;
   }
 
-  .landing-info h2 {
-    font-size: 35px;
-    line-height: 40px;
-  }
-
-  h2.landing-info-h2 {
-    font-size: 38px;
+  h2.landing-roles {
+    font-size: 34px;
   }
 }
 
@@ -312,13 +291,8 @@ h2.landing-info-h2 {
     font-size: 25px;
   }
 
-  .landing-info h2 {
-    font-size: 45px;
-    line-height: 42px;
-  }
-
-  h2.landing-info-h2 {
-    font-size: 55px;
+  h2.landing-roles {
+    font-size: 42px;
   }
 }
 
@@ -386,38 +360,102 @@ h2.landing-info-h2 {
     font-size: 35px;
   }
 
-  .landing-info h2 {
-    font-size: 65px;
-    line-height: 62px;
-  }
-
-  h2.landing-info-h2 {
-    font-size: 75px;
+  h2.landing-roles {
+    font-size: 62px;
   }
 }
 
-/* Longer role words than the original layout was drawn for — keep the stack
-   inside the viewport at every desktop width. */
+/* One scale for the role stack, tuned so both words clear the viewport edge
+   at every desktop width. */
 @media screen and (min-width: 1025px) and (max-width: 1599px) {
-  h2.landing-info-h2 {
+  h2.landing-roles {
     font-size: 44px;
-    line-height: 46px;
-  }
-
-  .landing-info h2 {
-    font-size: 38px;
-    line-height: 40px;
   }
 }
 
 @media screen and (min-width: 1600px) {
-  h2.landing-info-h2 {
-    font-size: 62px;
-    line-height: 64px;
+  h2.landing-roles {
+    font-size: 64px;
+  }
+}
+
+/* ============================================================
+   Mobile landing — the desktop version positions the intro and the
+   role block with `right: 50%` + translate, which tears them off the
+   left edge once the viewport is narrow. On phones the two blocks
+   simply stack inside the container instead.
+   ============================================================ */
+
+@media screen and (max-width: 1024px) {
+  .landing-section {
+    height: auto;
+    min-height: var(--vh);
+    display: flex;
+    align-items: flex-end;
+    padding-bottom: 8vh;
+    box-sizing: border-box;
   }
 
-  .landing-info h2 {
-    font-size: 54px;
-    line-height: 56px;
+  .landing-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 34px;
+    height: auto;
+  }
+
+  .landing-intro {
+    position: static;
+    transform: none;
+    top: auto;
+    left: auto;
+    right: auto;
+  }
+
+  .landing-info {
+    position: static;
+    transform: none;
+    top: auto;
+    bottom: auto;
+    left: auto;
+    right: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .landing-intro h2 {
+    font-size: 17px;
+    letter-spacing: 0.14em;
+    margin-bottom: 10px;
+  }
+
+  .landing-intro h1 {
+    font-size: clamp(38px, 11vw, 64px);
+    line-height: 0.98;
+    letter-spacing: 0.01em;
+  }
+
+  .landing-info h3 {
+    font-size: 15px;
+    letter-spacing: 0.2em;
+  }
+
+  h2.landing-roles {
+    font-size: clamp(38px, 11vw, 64px);
+    line-height: 1.02;
+    margin-top: 2px;
+  }
+
+  /* the character sits behind the copy instead of in a fixed column */
+  .character-model {
+    opacity: 0.5;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .landing-intro h1,
+  h2.landing-roles {
+    font-size: 44px;
   }
 }

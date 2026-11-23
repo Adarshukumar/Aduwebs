@@ -1,71 +1,154 @@
+/* ============================================================
+   About — sticky label rail + one measure of text.
+   The old layout was a 500px column of 33px bold body copy pushed
+   to the right edge; it read as a wall and collided with the nav.
+   ============================================================ */
+
 .about-section {
-  display: flex;
-  align-items: center;
-  justify-content: left;
-  place-items: center;
   position: relative;
-  opacity: 1;
-  height: auto;
   width: var(--cWidth);
-  margin: auto;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: clamp(90px, 12vh, 150px) 0;
 }
-.about-me {
-  padding: 50px 0px;
-  padding-bottom: 0;
-  width: 500px;
-  max-width: calc(100% - 15px);
+
+.about-grid {
+  display: grid;
+  grid-template-columns: minmax(200px, 0.62fr) minmax(0, 1.38fr);
+  gap: clamp(40px, 7vw, 110px);
+  align-items: start;
 }
-.about-me h3 {
-  font-size: 25px;
+
+/* ── left rail ── */
+.about-aside {
+  position: sticky;
+  top: 130px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.about-eyebrow {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.32em;
   text-transform: uppercase;
-  letter-spacing: 7px;
-  font-weight: 400;
   color: var(--accentColor);
 }
 
-.about-me p {
-  font-size: 33px;
-  font-weight: 600;
-  line-height: 36px;
-  letter-spacing: 1px;
+.about-lede {
+  margin: 0;
+  font-size: clamp(18px, 1.5vw, 22px);
+  line-height: 1.45;
+  color: #f0f0f0;
+  font-weight: 500;
+  max-width: 22ch;
 }
 
-@media only screen and (min-width: 600px) {
+.about-link {
+  align-self: flex-start;
+  margin-top: 6px;
+  padding-bottom: 4px;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9a9a9a;
+  border-bottom: 1px solid rgba(94, 234, 212, 0.4);
+  transition: color 0.3s ease, border-color 0.3s ease;
+}
+
+.about-link:hover {
+  color: var(--accentColor);
+  border-color: var(--accentColor);
+}
+
+/* ── body copy: readable measure, sane weight ── */
+.about-body {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(20px, 2.2vw, 30px);
+  max-width: 66ch;
+}
+
+.about-body p {
+  margin: 0;
+  font-size: clamp(15px, 1.12vw, 18px);
+  line-height: 1.72;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: #b9b9b9;
+}
+
+.about-body strong {
+  color: #f2f2f2;
+  font-weight: 600;
+}
+
+.about-body-close {
+  padding-top: clamp(20px, 2.2vw, 30px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ── the numbers, pulled out of the prose ── */
+.about-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  margin: clamp(12px, 2vw, 24px) 0 0;
+  background: rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.about-stat {
+  background: #050505;
+  padding: clamp(16px, 1.6vw, 22px) clamp(12px, 1.2vw, 18px);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.about-stat dt {
+  font-size: clamp(24px, 2.2vw, 32px);
+  font-weight: 600;
+  line-height: 1;
+  color: var(--accentColor);
+  letter-spacing: -0.02em;
+}
+
+.about-stat dd {
+  margin: 0;
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: #8f8f8f;
+  letter-spacing: 0.02em;
+}
+
+/* ── responsive ── */
+@media only screen and (max-width: 1024px) {
   .about-section {
-    justify-content: center;
+    padding: clamp(70px, 10vh, 110px) 0;
+  }
+
+  .about-grid {
+    grid-template-columns: 1fr;
+    gap: 34px;
+  }
+
+  .about-aside {
+    position: static;
+    gap: 14px;
+  }
+
+  .about-lede {
+    max-width: 30ch;
   }
 }
-@media only screen and (min-width: 768px) {
-  .about-me {
-    width: 500px;
-    max-width: calc(100% - 70px);
-    transform: translateY(0%);
-  }
-  .about-section {
-    opacity: 1;
-  }
-}
-@media only screen and (min-width: 1025px) {
-  .about-section {
-    width: var(--cWidth);
-    justify-content: right;
-    max-width: 1920px;
-    height: var(--vh);
-    padding: 0px;
-    opacity: 1;
-  }
-  .about-me {
-    padding: 0px;
-    width: 50%;
-  }
-  .about-me p {
-    font-size: 1.9vw;
-    line-height: 2.3vw;
-  }
-}
-@media only screen and (min-width: 1950px) {
-  .about-me p {
-    font-size: 2.5rem;
-    line-height: 2.7rem;
+
+@media only screen and (max-width: 620px) {
+  .about-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
