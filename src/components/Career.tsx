@@ -1,8 +1,16 @@
+import { useReveal } from "./utils/useReveal";
 import "./styles/Career.css";
 
 const Career = () => {
+  const ref = useReveal<HTMLDivElement>(".career-container > h2, .career-info-box", {
+    distance: 30,
+    gap: 110,
+    duration: 860,
+    threshold: 0.08,
+  });
+
   return (
-    <div className="career-section section-container">
+    <div className="career-section section-container" ref={ref}>
       <div className="career-container">
         <h2>
           My career <span>&</span>

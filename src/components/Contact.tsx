@@ -1,9 +1,17 @@
 import { MdArrowOutward, MdCopyright } from "react-icons/md";
+import { useReveal } from "./utils/useReveal";
 import "./styles/Contact.css";
 
 const Contact = () => {
+  const ref = useReveal<HTMLDivElement>(".contact-container > h3, .contact-flex > *", {
+    distance: 24,
+    gap: 90,
+    duration: 820,
+    threshold: 0.12,
+  });
+
   return (
-    <div className="contact-section section-container" id="contact">
+    <div className="contact-section section-container" id="contact" ref={ref}>
       <div className="contact-container">
         <h3>Contact</h3>
 

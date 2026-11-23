@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import "./styles/Loading.css";
 import { useLoading } from "../context/LoadingProvider";
 import gsap from "gsap";
+import { animate } from "animejs";
 import { initialFX } from "./utils/initialFX";
 
 /**
@@ -64,6 +65,41 @@ const Loading = ({ percent }: { percent: number }) => {
           { opacity: 1, y: 0, duration: ms(0.45) },
           ms(0.62)
         );
+
+      // The monogram is one glyph, so a per-letter stagger would be a no-op.
+      // Instead: let the script mark settle out of a slight skew with the
+      // plus arriving a beat later, and let the orbit ring trail a fine
+      // dashed halo around it.
+      const ak = lockupRef.current?.querySelector(".curtain-ak");
+      const plus = lockupRef.current?.querySelector(".curtain-plus");
+
+      if (ak && plus) {
+        animate(ak, {
+          skewX: [-8, 0],
+          letterSpacing: ["0.06em", "0em"],
+          duration: ms(1200),
+          delay: ms(180),
+          ease: "outExpo",
+        });
+
+        animate(plus, {
+          opacity: [0, 1],
+          scale: [0.4, 1],
+          rotate: [-90, 0],
+          duration: ms(720),
+          delay: ms(700),
+          ease: "outBack(2)",
+        });
+      }
+
+      if (orbitRef.current) {
+        animate(orbitRef.current, {
+          rotate: [0, 360],
+          duration: ms(9000),
+          loop: true,
+          ease: "linear",
+        });
+      }
     }, rootRef);
 
     return () => ctx.revert();
