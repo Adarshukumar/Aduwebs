@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./styles/WhatIDo.css";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -7,6 +7,27 @@ const WhatIDo = () => {
   const setRef = (el: HTMLDivElement | null, index: number) => {
     containerRef.current[index] = el;
   };
+
+  // The reveal is a character-tied ScrollTrigger. If WebGL fails, or the user
+  // reaches this section before the model has loaded, the boxes would stay
+  // `display:none` and the section would read as two empty outlined shells.
+  // This fallback reveals them on their own, independent of the 3D scene.
+  const [revealed, setRevealed] = useState(false);
+  useEffect(() => {
+    const node = document.querySelector(".what-box-in");
+    if (!node) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setRevealed(true);
+        });
+      },
+      { threshold: 0.15 }
+    );
+    io.observe(node);
+    return () => io.disconnect();
+  }, []);
+
   useEffect(() => {
     if (ScrollTrigger.isTouch) {
       containerRef.current.forEach((container) => {
@@ -25,7 +46,7 @@ const WhatIDo = () => {
     };
   }, []);
   return (
-    <div className="whatIDO">
+    <div className={`whatIDO${revealed ? " is-revealed" : ""}`}>
       <div className="what-box">
         <h2 className="title">
           W<span className="hat-h2">HAT</span>

@@ -34,51 +34,73 @@
 }
 .what-box-in {
   flex-direction: column;
-  height: 500px;
-  margin-left: 200px;
+  height: 660px;
+  margin-left: 120px;
   position: relative;
+  /* Hidden until the scroll timeline reveals it — but the reveal is a
+     character-tied ScrollTrigger, so CSS keeps a sane fallback. */
   display: none;
+}
+
+/* If the 3D scene never initialises the reveal never fires; this keeps the
+   section readable instead of leaving two empty dashed boxes. */
+.what-fallback .what-box-in,
+.whatIDO.is-revealed .what-box-in {
+  display: flex;
 }
 .what-content {
   width: 450px;
   height: 50%;
-  min-height: 33%;
-  transition: 0.5s;
-  /* border: 0.5px dashed rgba(255, 255, 255, 0.3); */
+  min-height: 42%;
+  transition: min-height 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    padding 0.5s cubic-bezier(0.22, 1, 0.36, 1);
   position: relative;
-  padding: 50px;
+  padding: 26px 40px 30px;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 }
 
 .what-noTouch:hover,
 .what-content-active {
-  min-height: 67%;
-  padding: 40px 50px;
+  min-height: 60%;
+  padding: 30px 40px;
 }
 
 .what-noTouch:hover ~ .what-content,
 .what-box-in:hover .what-noTouch:not(:hover),
 .what-content.what-sibling {
-  min-height: 33%;
-  padding: 10px 50px;
+  min-height: 42%;
+  padding: 16px 40px 22px;
 }
 .what-content h3 {
-  font-size: 35px;
-  letter-spacing: 1px;
-  margin: 0;
+  font-size: 26px;
+  line-height: 1.18;
+  letter-spacing: 0.4px;
+  margin: 0 0 8px;
 }
 .what-content p {
-  font-size: 14px;
-  line-height: 18px;
-  font-weight: 200;
-  letter-spacing: 0.7px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  font-weight: 300;
+  letter-spacing: 0.3px;
+  color: #a8a8a8;
+  margin: 10px 0 0;
+}
+
+/* the heading and blurb must never be sliced by the collapsed slice */
+.what-content-in h3,
+.what-content-in h4 {
+  flex-shrink: 0;
 }
 .what-content h4 {
   font-weight: 300;
-  letter-spacing: 1px;
-  margin: 0px;
-  font-size: 14px;
-  opacity: 0.3;
+  letter-spacing: 0.4px;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--accentColor);
+  opacity: 0.85;
 }
 .what-content-in {
   opacity: 0;
@@ -142,6 +164,7 @@
   border-left: none;
   border-top: none;
 }
+/* keep the arrow in the corner of the card, clear of the tag row */
 .what-arrow {
   position: absolute;
   bottom: 20px;
@@ -313,81 +336,208 @@
     padding: 10px 50px;
   }
 }
-@media only screen and (max-width: 900px) {
-  .whatIDO {
-    flex-direction: column;
-  }
-  .what-box h2 {
-    margin: 50px 0;
-    font-size: 55px;
-    line-height: 53px;
-  }
-  .what-box:first-child {
-    justify-content: left;
-  }
-  .what-box:last-child {
-    height: 500px;
-  }
-  .what-box {
-    width: 500px;
-    max-width: calc(100% - 50px);
-    margin: auto;
-  }
-  .what-content {
-    width: 100%;
-  }
-  .what-box-in {
-    margin-left: 0px;
-    height: 450px;
-  }
-  .what-content h5,
-  .what-content-flex {
-    opacity: 0;
-    transition: 0.3s;
-  }
-  .what-noTouch:hover h5,
-  .what-content-active h5,
-  .what-noTouch:hover .what-content-flex,
-  .what-content-active .what-content-flex {
-    opacity: 1;
-  }
-  .what-content {
-    padding: 30px;
-  }
-  .what-content p {
-    font-size: 11px;
-  }
-  .what-noTouch:hover,
-  .what-content-active {
-    padding: 10px 30px;
-  }
-  .what-tags {
-    font-size: 11px;
-  }
+/* legacy 900px rules retired — replaced by the phone layout at the bottom of this file */
 
-  .what-noTouch:hover ~ .what-content,
-  .what-box-in:hover .what-noTouch:not(:hover),
-  .what-content.what-sibling {
-    padding: 5px 30px;
-  }
-  .what-content h3 {
-    font-size: 25px;
-  }
-}
-@media only screen and (max-width: 550px) {
-  .whatIDO {
-    place-items: inherit;
-    align-items: start;
-    justify-content: left;
-  }
-  .what-box {
-    max-width: calc(100% - 25px);
-    margin: 0;
-  }
-}
 @media only screen and (min-width: 1950px) {
   .what-box h2 {
     font-size: 7rem;
     line-height: 6.8rem;
+  }
+}
+
+/* ============================================================
+   Containment + fit.
+   `.whatIDO` is 1354px wide on a 1440 viewport and the 450px
+   cards sit at the far right, so the tag pills were being sliced
+   by the card edge. Constrain the section, give the copy a little
+   more room, and let the pill row wrap without clipping.
+   ============================================================ */
+
+.whatIDO {
+  width: var(--cWidth);
+  max-width: 1280px;
+  box-sizing: border-box;
+  padding: 0 20px;
+  gap: 24px;
+}
+
+.what-box {
+  min-width: 0;
+}
+
+.what-box h2 {
+  margin-right: 0;
+}
+
+.what-box-in {
+  width: 460px;
+  max-width: 100%;
+  margin-left: 0;
+}
+
+.what-content {
+  width: 100%;
+}
+
+.what-content-in {
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 30px;
+  min-height: 0;
+}
+
+.what-content-flex {
+  margin-top: 12px;
+  row-gap: 6px;
+  padding-right: 40px;
+  flex-wrap: wrap;
+  overflow: hidden;
+  max-height: 100%;
+}
+
+.what-arrow {
+  margin-top: auto;
+  flex-shrink: 0;
+}
+
+@media only screen and (max-width: 1100px) {
+  .whatIDO {
+    max-width: 100%;
+  }
+
+  .what-box-in {
+    width: 400px;
+  }
+}
+
+/* ============================================================
+   Phones.
+   The hover/collapse mechanic is a fixed-height box sliced into
+   42%/58% — there is no hover on touch, so on a phone it just
+   clipped the copy. Cards become full, auto-height stacks here.
+   ============================================================ */
+
+@media only screen and (max-width: 900px) {
+  .whatIDO {
+    flex-direction: column;
+    height: auto;
+    padding: 70px 0 90px;
+    gap: 34px;
+  }
+
+  .what-box {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .what-box h2 {
+    font-size: clamp(52px, 15vw, 76px);
+    line-height: 1.02;
+    margin: 0;
+  }
+
+  .what-box-in {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    margin-left: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .what-content {
+    width: 100%;
+    min-height: 0 !important;
+    height: auto;
+    padding: 30px 26px 34px;
+    border-top: 1px dashed rgba(255, 255, 255, 0.22);
+  }
+
+  .what-content:last-child {
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.22);
+  }
+
+  /* no hover states on touch — everything reads open */
+  .what-content .what-content-in {
+    height: auto;
+    overflow: visible;
+    padding-bottom: 0;
+  }
+
+  .what-content h3 {
+    font-size: 22px;
+    line-height: 1.2;
+  }
+
+  .what-content h4 {
+    font-size: 13px;
+    margin-bottom: 2px;
+  }
+
+  .what-content p {
+    font-size: 14px;
+    line-height: 1.6;
+    margin-top: 12px;
+  }
+
+  .what-content-flex {
+    padding-right: 0;
+    margin-top: 16px;
+  }
+
+  .what-tags {
+    font-size: 12px;
+  }
+
+  /* the corner arrow is a hover affordance; drop it on touch */
+  .what-arrow {
+    display: none;
+  }
+
+  .what-border1,
+  .what-border2,
+  .what-corner {
+    display: none;
+  }
+}
+
+/* ============================================================
+   The 3D character is a fixed layer at z-index 11 and slides
+   left as you scroll — which put him straight through the two
+   content cards and made the copy unreadable. The cards get
+   their own solid plate and a higher stacking order so the
+   character always reads as a backdrop, never on top of text.
+   ============================================================ */
+
+.whatIDO {
+  position: relative;
+  z-index: 12;
+}
+
+.what-box-in {
+  position: relative;
+  z-index: 12;
+}
+
+.what-content {
+  background-color: rgba(5, 5, 5, 0.92);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+/* the left-hand title stays clear of the character */
+.whatIDO .what-box:first-child {
+  position: relative;
+  z-index: 12;
+}
+
+@media only screen and (max-width: 900px) {
+  .what-content {
+    background-color: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
 }

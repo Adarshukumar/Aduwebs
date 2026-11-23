@@ -111,7 +111,12 @@ body {
   height: var(--vh);
   margin: auto;
   margin-top: 50px;
-  margin-bottom: -100px;
+  /* This used to be -100px, which dragged CONTACT up over the canvas and
+     sliced the spheres in half behind the heading. The section now ends
+     cleanly and the copy below it has room. */
+  margin-bottom: 0;
+  padding-bottom: 60px;
+  box-sizing: border-box;
 }
 
 .techstack h2 {
@@ -119,7 +124,7 @@ body {
   text-align: center;
   position: absolute;
   width: 100%;
-  top: 120px;
+  top: 90px;
   left: 0;
   font-weight: 400;
   text-transform: uppercase;

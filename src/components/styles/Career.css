@@ -242,3 +242,143 @@
     justify-content: left;
   }
 }
+/* ============================================================
+   Timeline layout, rebuilt.
+   The spine sat at left:50% while the two text columns each took
+   40% and justified to the edges — so both columns ran straight
+   through the line and the right paragraph slid under the RESUME
+   rail. It is a real three-column grid now: text | spine | text,
+   with the spine in its own track and the copy clear of it.
+   ============================================================ */
+
+.career-info {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 96px minmax(0, 1fr);
+  column-gap: 0;
+  width: 100%;
+}
+
+.career-timeline {
+  grid-column: 2;
+  grid-row: 1 / span 20;
+  position: relative;
+  left: auto;
+  top: 0;
+  transform: none;
+  width: 1px;
+  height: auto;
+  max-height: none;
+  margin: 0 auto;
+  justify-self: center;
+  background-image: linear-gradient(to top, #0d9488 10%, rgba(94, 234, 212, 0.8) 60%, rgba(94, 234, 212, 0) 98%);
+}
+
+.career-dot {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%, 50%);
+}
+
+/* each entry is two children of the same grid, so it flows as one row */
+.career-info-box {
+  display: contents;
+}
+
+.career-info-box .career-info-in {
+  grid-column: 1;
+  width: auto;
+  justify-content: space-between;
+  gap: 28px;
+  padding-right: 34px;
+  margin-bottom: 48px;
+  align-items: flex-start;
+}
+
+.career-info-box > p {
+  grid-column: 3;
+  width: auto;
+  max-width: 46ch;
+  margin: 0 0 48px;
+  padding-left: 4px;
+}
+
+/* the date column inside each entry */
+.career-info-in > div:last-child {
+  font-size: 15px;
+  line-height: 1.4;
+  color: #9a9a9a;
+  text-align: right;
+  flex-shrink: 0;
+  max-width: 15ch;
+}
+
+.career-info h4 {
+  font-size: 30px;
+  line-height: 1.12;
+}
+
+.career-info h5 {
+  font-size: 15px;
+  letter-spacing: 0.06em;
+  text-transform: none;
+  margin: 8px 0 0;
+}
+
+.career-info-box > p {
+  font-size: 15.5px;
+  line-height: 1.65;
+  color: #a5a5a5;
+}
+
+@media only screen and (max-width: 1100px) {
+  .career-info {
+    grid-template-columns: minmax(0, 1fr) 48px minmax(0, 1fr);
+  }
+
+  .career-info-in {
+    padding-right: 20px;
+  }
+
+  .career-info h4 {
+    font-size: 22px;
+  }
+}
+
+@media only screen and (max-width: 900px) {
+  .career-info {
+    grid-template-columns: 28px minmax(0, 1fr);
+    column-gap: 18px;
+  }
+
+  .career-timeline {
+    grid-column: 1;
+    grid-row: 1 / span 20;
+  }
+
+  .career-info-box {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    grid-column: 2;
+    margin-bottom: 54px;
+  }
+
+  .career-info-box .career-info-in {
+    grid-column: auto;
+    padding-right: 0;
+    margin-bottom: 0;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .career-info-in > div:last-child {
+    text-align: left;
+    max-width: none;
+  }
+
+  .career-info-box > p {
+    grid-column: auto;
+    margin-bottom: 0;
+  }
+}
