@@ -1,7 +1,19 @@
-@import url("https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap");
+/* ============================================================
+   Type system.
+   Inter Tight for everything that speaks (tight, modern, legs at
+   display sizes), JetBrains Mono for the small structural labels,
+   Allura for the one script signature in the wordmark.
+   Self-hosted, so nothing waits on Google Fonts.
+   ============================================================ */
 
 :root {
-  font-family: "Geist", sans-serif;
+  --font-display: "Inter Tight Variable", "Inter Tight", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, Menlo, monospace;
+  --font-script: "Allura", "Brush Script MT", cursive;
+
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  font-feature-settings: "ss01" 1, "cv11" 1;
 
   font-optical-sizing: auto;
   font-style: normal;
@@ -31,7 +43,18 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: "Geist", sans-serif;
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+/* the small structural labels read as instrumentation, not prose */
+.navbar-connect,
+.curtain-status,
+.curtain-count,
+.curtain-header,
+.about-eyebrow,
+.carousel-tools .tools-label {
+  font-family: var(--font-mono);
 }
 
 body {

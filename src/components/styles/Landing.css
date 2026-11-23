@@ -198,7 +198,7 @@
   font-size: 28px;
   line-height: 28px;
   font-weight: 500;
-  font-family: "Geist", sans-serif;
+  font-family: var(--font-display);
 }
 
 /* .landing-intro h1 span {
@@ -229,7 +229,7 @@ h2.landing-roles {
   display: flex;
   flex-direction: column;
   margin: 4px 0 0;
-  font-family: "Geist", sans-serif;
+  font-family: var(--font-display);
   font-weight: 600;
   font-size: 42px;
   line-height: 1.06;

@@ -519,7 +519,7 @@
 }
 
 .curtain-plus {
-  font-family: "Geist", sans-serif;
+  font-family: var(--font-display);
   font-size: clamp(22px, 3.2vw, 32px);
   line-height: 1;
   font-weight: 500;

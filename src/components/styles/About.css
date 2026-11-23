@@ -152,3 +152,39 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* ============================================================
+   The about panel.
+   The character fly-through used to push this section +30% and
+   fade it out, so the copy slid in and out of frame while you
+   were reading it. It is a solid plate now with its own ground,
+   sitting above the 3D layer, and it holds still.
+   ============================================================ */
+
+.about-section {
+  position: relative;
+  z-index: 12;
+  background-color: #050505;
+  isolation: isolate;
+}
+
+/* a soft seam so the panel reads as coming forward, not floating */
+.about-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  /* a faint teal breath only — no top-edge plate, which read as a seam */
+  background: radial-gradient(680px 400px at 10% 22%, rgba(94, 234, 212, 0.045), transparent 68%);
+  pointer-events: none;
+}
+
+.about-section::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+}

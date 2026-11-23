@@ -77,8 +77,10 @@ export function setCharTimeline(
           { z: 75, y: 8.4, duration: 6, delay: 2, ease: "power3.inOut" },
           0
         )
-        .to(".about-section", { y: "30%", duration: 6 }, 0)
-        .to(".about-section", { opacity: 0, delay: 3, duration: 2 }, 0)
+        // The about copy must stay put: it is prose, not a cinematic plate.
+        // It used to be pushed +30% and faded out mid-scroll, which is why it
+        // slid in and out of the viewport while you were trying to read it.
+        .fromTo(".about-section", { y: 0 }, { y: 0, duration: 6 }, 0)
         .fromTo(
           ".character-model",
           { pointerEvents: "inherit" },

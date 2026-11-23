@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import HoverLinks from "./HoverLinks";
 import { gsap } from "gsap";
@@ -8,7 +8,16 @@ import "./styles/Navbar.css";
 gsap.registerPlugin(ScrollSmoother, ScrollTrigger);
 export let smoother: ScrollSmoother;
 
+const SECTIONS = [
+  { id: "about", label: "About" },
+  { id: "work", label: "Work" },
+  { id: "contact", label: "Contact" },
+];
+
 const Navbar = () => {
+  const [scrolled, setScrolled] = useState(false);
+  const [active, setActive] = useState("");
+
   useEffect(() => {
     smoother = ScrollSmoother.create({
       wrapper: "#smooth-wrapper",
@@ -18,8 +27,8 @@ const Navbar = () => {
       effects: true,
       autoResize: true,
       ignoreMobileResize: true,
-    });   
- 
+    });
+
     smoother.scrollTop(0);
     smoother.paused(true);
 
@@ -38,13 +47,64 @@ const Navbar = () => {
     window.addEventListener("resize", () => {
       ScrollSmoother.refresh(true);
     });
+
+    return () => {
+      window.removeEventListener("resize", () => ScrollSmoother.refresh(true));
+    };
   }, []);
+
+  // Wait for the intro to hand over before the rail starts reacting, then
+  // track which section owns the viewport.
+  useEffect(() => {
+    let cleanups: Array<() => void> = [];
+    const start = window.setTimeout(() => {
+      const onScroll = () => {
+        // the smoother scrolls the window, so scrollY is the honest source
+        setScrolled(window.scrollY > 40);
+
+        // The sections between About and Work (What I Do, Career) have no nav
+        // entry of their own, so a "top passed the 45% line" test leaves About
+        // lit all the way through Career. Instead: pick whichever *named*
+        // section covers the reading line, and keep the last one you passed.
+        const marker = window.innerHeight * 0.35;
+        let current = "";
+        let lastPassed = "";
+        for (const section of SECTIONS) {
+          const el = document.getElementById(section.id);
+          if (!el) continue;
+          const rect = el.getBoundingClientRect();
+          if (rect.top <= marker) lastPassed = section.id;
+          if (rect.top <= marker && rect.bottom > marker) current = section.id;
+        }
+        // if the reading line sits in an unnamed section, hold the one above it
+        setActive(current || lastPassed);
+      };
+      onScroll();
+      window.addEventListener("scroll", onScroll, { passive: true });
+      cleanups.push(() => window.removeEventListener("scroll", onScroll));
+    }, 1200);
+
+    return () => {
+      window.clearTimeout(start);
+      cleanups.forEach((fn) => fn());
+    };
+  }, []);
+
   return (
     <>
-      <div className="header">
-        <a href="/#" className="navbar-title" data-cursor="disable">
-          @AK
+      <header className={`header${scrolled ? " is-scrolled" : ""}`}>
+        <a
+          href="/#"
+          className="navbar-title"
+          data-cursor="disable"
+          aria-label="Adarsh Kumar — home"
+        >
+          <span className="navbar-ak">AK</span>
+          <span className="navbar-plus" aria-hidden="true">
+            +
+          </span>
         </a>
+
         <a
           href="https://www.linkedin.com/in/adarshu07/"
           className="navbar-connect"
@@ -52,26 +112,38 @@ const Navbar = () => {
           target="_blank"
           rel="noreferrer"
         >
-          linkedin.com
+          <span className="navbar-connect-dot" aria-hidden="true" />
+          linkedin.com/in/adarshu07
         </a>
-        <ul>
-          <li>
-            <a data-href="#about" href="#about">
-              <HoverLinks text="ABOUT" />
-            </a>
-          </li>
-          <li>
-            <a data-href="#work" href="#work">
-              <HoverLinks text="WORK" />
-            </a>
-          </li>
-          <li>
-            <a data-href="#contact" href="#contact">
-              <HoverLinks text="CONTACT" />
-            </a>
-          </li>
-        </ul>
-      </div>
+
+        <nav aria-label="Sections">
+          <ul>
+            {SECTIONS.map((section) => (
+              <li key={section.id}>
+                <a
+                  data-href={`#${section.id}`}
+                  href={`#${section.id}`}
+                  className={active === section.id ? "is-active" : undefined}
+                  aria-current={active === section.id ? "true" : undefined}
+                >
+                  <HoverLinks text={section.label} />
+                </a>
+              </li>
+            ))}
+            <li>
+              <a
+                href="/Adarsh-Kumar-CV.pdf"
+                target="_blank"
+                rel="noreferrer"
+                className="navbar-resume"
+                data-cursor="disable"
+              >
+                Résumé
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </header>
 
       <div className="landing-circle1"></div>
       <div className="landing-circle2"></div>

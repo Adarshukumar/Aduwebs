@@ -1,9 +1,18 @@
+/* ============================================================
+   The rail.
+   Replaces the bare "@AK / linkedin.com / ABOUT WORK CONTACT"
+   line with a real wordmark, a status pip and a pill nav that
+   reacts to scroll and marks the section you're actually in.
+   ============================================================ */
+
 .header {
   display: flex;
-  max-width: var(--cMaxWidth);
-  width: var(--cWidth);
+  align-items: center;
   justify-content: space-between;
-  padding: 20px 0px;
+  gap: 24px;
+  max-width: 1360px;
+  width: var(--cWidth);
+  padding: 22px 0;
   margin-bottom: -100px;
   box-sizing: border-box;
   position: fixed;
@@ -11,73 +20,230 @@
   transform: translateX(-50%);
   top: 0;
   z-index: 9999;
+  transition: padding 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.header ul {
-  font-size: 12px;
+
+/* once you leave the hero the rail tightens and gains a backing plate */
+.header::before {
+  content: "";
+  position: absolute;
+  inset: 6px -18px;
+  border-radius: 14px;
+  background: rgba(5, 5, 5, 0.72);
+  border: 1px solid transparent;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  opacity: 0;
+  transition: opacity 0.45s ease, border-color 0.45s ease;
+  pointer-events: none;
+}
+
+.header.is-scrolled {
+  padding: 12px 0;
+}
+
+.header.is-scrolled::before {
+  opacity: 1;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.header > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── the wordmark ── */
+.navbar-title {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 2px;
+  line-height: 1;
+  padding: 2px 0;
+  color: #f4f7f9;
+  transition: opacity 0.3s ease;
+}
+
+.navbar-title:hover {
+  color: #f4f7f9;
+  opacity: 0.82;
+}
+
+.navbar-ak {
+  font-family: "Allura", "Brush Script MT", cursive;
+  font-size: 40px;
+  line-height: 0.78;
+  display: block;
+}
+
+.navbar-plus {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--accentColor);
+  margin-top: 2px;
+}
+
+/* ── the middle: a quiet status line ── */
+.navbar-connect {
+  display: none;
+  align-items: center;
+  gap: 9px;
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: #8f8f8f;
+  transition: color 0.3s ease;
+}
+
+.navbar-connect:hover {
+  color: #d8d8d8;
+}
+
+.navbar-connect-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accentColor);
+  box-shadow: 0 0 0 3px rgba(94, 234, 212, 0.16);
+}
+
+/* ── the pill nav ── */
+.header nav ul {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  gap: 4px;
   margin: 0;
-  padding: 0;
+  padding: 4px;
   list-style: none;
-  column-gap: 40px;
-  row-gap: 8px;
-  align-items: end;
+  font-size: 13px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
 }
-.header ul li {
-  margin-left: 0px;
-  letter-spacing: 1px;
-  color: #ccc;
-  font-weight: 600;
+
+.header nav ul li {
+  margin: 0;
+  letter-spacing: 0.02em;
+  color: #b6b6b6;
+  font-weight: 500;
   cursor: pointer;
 }
-.navbar-connect {
-  position: absolute;
-  display: none;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 15px;
-  letter-spacing: 1px;
-  font-weight: 500;
+
+.header nav ul li > a {
+  display: block;
+  padding: 8px 16px;
+  border-radius: 999px;
+  transition: color 0.28s ease, background-color 0.28s ease;
 }
-.navbar-title {
-  font-weight: 700;
-  font-size: 14px;
-  letter-spacing: 0.2px;
+
+.header nav ul li > a:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.06);
 }
-@media only screen and (min-width: 500px) {
+
+.header nav ul li > a.is-active {
+  color: #050505;
+  background: var(--accentColor);
+}
+
+/* the resume gets its own treatment — it's the one action in the rail */
+.header nav ul li > a.navbar-resume {
+  margin-left: 4px;
+  color: #eaeaea;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.header nav ul li > a.navbar-resume:hover {
+  color: #050505;
+  background: #ffffff;
+  border-color: #ffffff;
+}
+
+/* ── small screens: wordmark + a stacked, unpilled list ── */
+@media only screen and (max-width: 719px) {
   .header {
-    padding: 20px 0px;
+    padding: 16px 0;
+    align-items: flex-start;
   }
-  .header ul {
-    flex-direction: row;
-    align-items: center;
-    font-size: 14px;
+
+  .header::before {
+    inset: 2px -10px;
+    border-radius: 12px;
   }
-  .header ul li {
-    color: #eae5ec;
+
+  .navbar-ak {
+    font-size: 32px;
   }
-  .navbar-title {
-    font-size: 16px;
+
+  .navbar-plus {
+    font-size: 12px;
+  }
+
+  .header nav ul {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2px;
+    padding: 0;
+    font-size: 12px;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+  }
+
+  .header nav ul li {
+    text-align: right;
+  }
+
+  .header nav ul li > a {
+    padding: 3px 0;
+    border-radius: 0;
+    color: #c9c9c9;
+  }
+
+  .header nav ul li > a.is-active {
+    color: var(--accentColor);
+    background: transparent;
+  }
+
+  .header nav ul li > a.navbar-resume {
+    margin-left: 0;
+    border: none;
+    color: #8f8f8f;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
   }
 }
+
 @media only screen and (min-width: 900px) {
   .navbar-connect {
-    display: block;
+    display: flex;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
   }
 }
+
 @media only screen and (min-width: 1200px) {
   .header {
-    padding: 35px 0px;
+    padding: 26px 0;
   }
-  .header ul {
-    column-gap: 80px;
-    font-size: 16px;
+
+  .header.is-scrolled {
+    padding: 14px 0;
   }
-  .navbar-connect {
-    font-size: 16px;
+
+  .navbar-ak {
+    font-size: 44px;
   }
-  .navbar-title {
-    font-size: 18px;
+
+  .navbar-plus {
+    font-size: 17px;
+  }
+
+  .header nav ul {
+    font-size: 13.5px;
   }
 }
