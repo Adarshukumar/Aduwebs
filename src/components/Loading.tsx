@@ -6,98 +6,101 @@ import { animate } from "animejs";
 import { initialFX } from "./utils/initialFX";
 
 /**
- * The opening — the monogram curtain.
+ * The opening.
  *
- * A script "AK" with the accent plus, an orbit ring turning behind it, a
- * hairline rule drawing itself under a counter that runs to 100. When the
- * counter lands the mark holds for a beat, then the whole curtain irises shut
- * from the middle and hands over to the 3D scene.
+ * Rebuilt to match the reference site's entry, not a spinner bolted onto a
+ * black page:
  *
- * The counter is driven by the real model download (see `setProgress`), not a
- * timer, so a slow connection waits honestly and a fast one doesn't stall.
+ *   1. a pale ground with a script @AK in the top corner and a ball bouncing
+ *      through a row of picket posts — a tiny game, running while the model
+ *      downloads;
+ *   2. a huge slow marquee of role words across the middle;
+ *   3. a black pill at the centre with a blinking caret: "Loading 042%" that
+ *      becomes "Welcome" the moment the counter lands;
+ *   4. the pill *expands into the page* — the black swallows the whole
+ *      viewport in one continuous shape, and the hero is already animating
+ *      underneath it by the time it clears.
+ *
+ * The counter is driven by the real GLTF download (see `setProgress`), never
+ * a fake timer, and there is a hard escape so a dead CDN can't trap anyone.
  */
 
-/**
- * `?curtain=slow` runs the whole opening at a fifth of speed — useful for
- * inspecting the timing, and for anyone who wants to watch the curtain close.
- */
 const SLOWMO =
   typeof window !== "undefined" &&
   new URLSearchParams(window.location.search).get("curtain") === "slow";
 
-/** Every delay and duration goes through here so `?curtain=slow` stays honest. */
 const S = SLOWMO ? 5 : 1;
 const ms = (value: number) => value * S;
 
 const Loading = ({ percent }: { percent: number }) => {
   const { setIsLoading } = useLoading();
-  const [leaving, setLeaving] = useState(false);
-  const [welcomed, setWelcomed] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+  const [clicked, setClicked] = useState(false);
 
   const rootRef = useRef<HTMLDivElement>(null);
-  const lockupRef = useRef<HTMLDivElement>(null);
-  const orbitRef = useRef<HTMLSpanElement>(null);
-  const ruleRef = useRef<HTMLSpanElement>(null);
-  const countRef = useRef<HTMLSpanElement>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const gameRef = useRef<HTMLDivElement>(null);
+  const marqueeRef = useRef<HTMLDivElement>(null);
   const statusRef = useRef<HTMLSpanElement>(null);
+  const countRef = useRef<HTMLSpanElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
 
-  // ── the intro: mark, orbit, rule ───────────────────────────────
+  // ── the entrance: ground, game, marquee, pill ──────────────────
   useEffect(() => {
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
       tl.fromTo(
-        orbitRef.current,
-        { opacity: 0, scale: 0.86, rotate: -18 },
-        { opacity: 0.55, scale: 1, rotate: 0, duration: ms(1.1) },
+        rootRef.current,
+        { opacity: 0 },
+        { opacity: 1, duration: ms(0.5), ease: "power1.out" },
         0
       )
         .fromTo(
-          lockupRef.current,
-          { opacity: 0, scale: 0.82, y: 14, rotate: -7 },
-          { opacity: 1, scale: 1, y: 0, rotate: 0, duration: ms(0.95) },
-          ms(0.08)
+          gameRef.current,
+          { opacity: 0, scale: 0.4, x: 18 },
+          { opacity: 1, scale: 0.4, x: 0, duration: ms(0.7) },
+          ms(0.25)
         )
-        .fromTo(ruleRef.current, { scaleX: 0 }, { scaleX: 1, duration: ms(0.6), ease: "power2.inOut" }, ms(0.5))
         .fromTo(
-          [statusRef.current, countRef.current],
-          { opacity: 0, y: 6 },
-          { opacity: 1, y: 0, duration: ms(0.45) },
-          ms(0.62)
+          headerRef.current,
+          { opacity: 0, y: -8 },
+          { opacity: 1, y: 0, duration: ms(0.6) },
+          ms(0.1)
+        )
+        .fromTo(
+          marqueeRef.current,
+          { opacity: 0, y: 26 },
+          { opacity: 1, y: 0, duration: ms(0.9) },
+          ms(0.2)
+        )
+        .fromTo(
+          wrapRef.current,
+          { opacity: 0, y: 26, scale: 0.96 },
+          { opacity: 1, y: 0, scale: 1, duration: ms(0.8), ease: "outExpo" },
+          ms(0.4)
         );
 
-      // The monogram is one glyph, so a per-letter stagger would be a no-op.
-      // Instead: let the script mark settle out of a slight skew with the
-      // plus arriving a beat later, and let the orbit ring trail a fine
-      // dashed halo around it.
-      const ak = lockupRef.current?.querySelector(".curtain-ak");
-      const plus = lockupRef.current?.querySelector(".curtain-plus");
-
-      if (ak && plus) {
-        animate(ak, {
-          skewX: [-8, 0],
-          letterSpacing: ["0.06em", "0em"],
-          duration: ms(1200),
-          delay: ms(180),
-          ease: "outExpo",
-        });
-
-        animate(plus, {
-          opacity: [0, 1],
-          scale: [0.4, 1],
-          rotate: [-90, 0],
-          duration: ms(720),
-          delay: ms(700),
-          ease: "outBack(2)",
+      // the marquee drifts continuously, independent of load progress
+      const track = marqueeRef.current?.querySelector(".loading-marquee-track");
+      if (track) {
+        animate(track, {
+          translateX: [0, -1920],
+          duration: ms(26000),
+          loop: true,
+          ease: "linear",
         });
       }
 
-      if (orbitRef.current) {
-        animate(orbitRef.current, {
-          rotate: [0, 360],
-          duration: ms(9000),
+      // a slow breathing pulse on the hover glow so the pill never sits dead
+      const glow = wrapRef.current?.querySelector(".loading-glow");
+      if (glow) {
+        animate(glow, {
+          scale: [1, 1.18, 1],
+          opacity: [0.45, 0.7, 0.45],
+          duration: ms(3200),
           loop: true,
-          ease: "linear",
+          ease: "inOutSine",
         });
       }
     }, rootRef);
@@ -105,142 +108,173 @@ const Loading = ({ percent }: { percent: number }) => {
     return () => ctx.revert();
   }, []);
 
-  // ── the counter lands: swap the label, wake the page, iris out ──
+  /**
+   * The handover.
+   *
+   * The pill swells until black fills the frame, then that black lifts to
+   * reveal the hero — which initialFX has already started animating, so the
+   * two read as one continuous move rather than a fade to a static page.
+   *
+   * This is called from the same timer that flips `clicked`, not from an
+   * effect watching it: a re-render can land between the two, and a GSAP
+   * tween started against a stale element gets reverted mid-flight.
+   */
+  const runHandover = () => {
+    const wrap = wrapRef.current;
+    const screen = rootRef.current;
+    if (!wrap || !screen) return;
+
+    // Scaling a fixed-size plate, not tweening width/height: layout-driven
+    // custom properties get recomputed mid-tween and the animation stalls
+    // at whatever the first frame measured.
+    const plateW = 248;
+    const plateH = 64;
+    const coverW = window.innerWidth + 2400;
+    const coverH = window.innerHeight + 400;
+    const scale = Math.max(coverW / plateW, coverH / plateH);
+
+    gsap
+      .timeline()
+      .set(wrap, { width: plateW, height: plateH, borderRadius: 100 })
+      .to(
+        wrap,
+        {
+          scale,
+          borderRadius: 100 / scale,
+          duration: ms(1),
+          ease: "expo.inOut",
+        },
+        0
+      )
+      .to(
+        [marqueeRef.current, headerRef.current, gameRef.current].filter(Boolean),
+        { opacity: 0, duration: ms(0.35), ease: "power1.out" },
+        0
+      )
+      .to(
+        screen,
+        { opacity: 0, duration: ms(0.7), ease: "power2.inOut" },
+        ms(0.8)
+      );
+  };
+
+  // ── the counter lands ─────────────────────────────────────────
   useEffect(() => {
     if (percent < 100) return;
 
-    // let the counter visibly sit on 100 before anything moves
     const beat = window.setTimeout(() => {
-      setWelcomed(true);
+      setLoaded(true);
       if (statusRef.current) statusRef.current.textContent = "Welcome";
-    }, ms(140));
+      if (countRef.current) countRef.current.style.opacity = "0";
+    }, ms(520));
 
-    // The page has to be awake *behind* the curtain, or the iris opens onto a
-    // frozen hero. initialFX unpauses the smooth scroller and runs the reveal.
-    const HOLD = 520;
+    // Everything behind has to be awake *before* the pill opens, or the wipe
+    // reveals a frozen hero. initialFX unpauses the scroller and runs the
+    // hero's own reveal, so the two animations overlap and read as one move.
     const wake = window.setTimeout(() => {
       try {
         initialFX();
       } catch (error) {
-        // never let a reveal failure trap the visitor behind the curtain
         console.error("initialFX failed", error);
       }
-    }, ms(140 + HOLD));
+    }, ms(560));
 
-    const close = window.setTimeout(() => {
-      const root = rootRef.current;
-      if (!root) return;
-      setLeaving(true);
+    const open = window.setTimeout(() => {
+      setClicked(true);
+      runHandover();
+    }, ms(900));
 
-      // iris shut: 150% -> 0%, one property, GPU-friendly
-      gsap.fromTo(
-        root,
-        { "--curtain-iris": "150%" },
-        {
-          "--curtain-iris": "0%",
-          duration: ms(0.82),
-          ease: "power3.inOut",
-          onComplete: () => setIsLoading(false),
-        }
-      );
-      // The lockup *rides* the iris out rather than dissolving ahead of it —
-      // it stays opaque while the opening narrows, and only lets go at the end.
-      gsap.to([lockupRef.current, orbitRef.current], {
-        scale: 1.1,
-        opacity: 0,
-        duration: ms(0.82),
-        delay: ms(0.12),
-        ease: "power1.in",
-      });
-    }, ms(140 + HOLD));
+    const done = window.setTimeout(() => {
+      setIsLoading(false);
+    }, ms(1900));
 
     return () => {
       window.clearTimeout(beat);
       window.clearTimeout(wake);
-      window.clearTimeout(close);
+      window.clearTimeout(open);
+      window.clearTimeout(done);
     };
   }, [percent, setIsLoading]);
 
+
+
   // ── the failsafe ───────────────────────────────────────────────
-  // If the model never reports done (dead network, blocked CDN, WebGL refused)
-  // the visitor still gets the site instead of a permanent curtain.
   useEffect(() => {
     const escape = window.setTimeout(() => {
       if (percent < 100) {
         console.warn("Model load timed out — opening the site anyway");
-        setWelcomed(true);
-        if (statusRef.current) statusRef.current.textContent = "Welcome";
+        setLoaded(true);
+          if (statusRef.current) statusRef.current.textContent = "Welcome";
         try {
           initialFX();
         } catch {
           /* the page is still usable without the reveal */
         }
-        setLeaving(true);
-        const root = rootRef.current;
-        if (root) {
-          gsap.fromTo(
-            root,
-            { "--curtain-iris": "150%" },
-            { "--curtain-iris": "0%", duration: ms(0.82), ease: "power3.inOut", onComplete: () => setIsLoading(false) }
-          );
-        } else {
-          setIsLoading(false);
-        }
+        setClicked(true);
+        window.setTimeout(() => setIsLoading(false), 1200);
       }
     }, ms(14000));
 
     return () => window.clearTimeout(escape);
   }, [percent, setIsLoading]);
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
-    // the glow follows the pointer, but only by a little — a lean, not a drag
-    const { currentTarget: target } = e;
-    const rect = target.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    target.style.setProperty("--curtain-x", `${x}px`);
-    target.style.setProperty("--curtain-y", `${y}px`);
-  };
-
   return (
-    <div
-      ref={rootRef}
-      className={`curtain${leaving ? " is-leaving" : ""}${welcomed ? " is-welcomed" : ""}`}
-      onMouseMove={handleMouseMove}
-      aria-hidden="true"
-    >
-      <span className="curtain-tick tl" />
-      <span className="curtain-tick tr" />
-      <span className="curtain-tick bl" />
-      <span className="curtain-tick br" />
+    <>
+      <div ref={headerRef} className="loading-header">
+        <a href="/#" className="loader-title" data-cursor="disable">
+          <span className="loader-title-ak">AK</span>
+          <span className="loader-title-plus">+</span>
+        </a>
 
-      <div className="curtain-header">
-        <span className="curtain-mark-word">@AK</span>
-        <span>
-          Adarsh Kumar<span className="curtain-header-dot"> · Portfolio</span>
-        </span>
-      </div>
-
-      <div className="curtain-inner">
-        <span ref={orbitRef} className="curtain-orbit" />
-
-        <div ref={lockupRef} className="curtain-lockup">
-          <span className="curtain-ak">AK</span>
-          <span className="curtain-plus">+</span>
-        </div>
-
-        <span ref={ruleRef} className="curtain-rule" />
-
-        <div className="curtain-meta">
-          <span ref={statusRef} className="curtain-status">
-            Loading the studio
-          </span>
-          <span ref={countRef} className="curtain-count">
-            {String(percent).padStart(3, "0")}
-          </span>
+        <div ref={gameRef} className={`loaderGame${clicked ? " loader-out" : ""}`}>
+          <div className="loaderGame-container">
+            <div className="loaderGame-in">
+              {[...Array(27)].map((_, index) => (
+                <div className="loaderGame-line" key={index} />
+              ))}
+            </div>
+            <div className="loaderGame-ball" />
+          </div>
         </div>
       </div>
-    </div>
+
+      <div ref={rootRef} className="loading-screen">
+        <div ref={marqueeRef} className="loading-marquee">
+          <div className="loading-marquee-track">
+            {[
+              "AI Developer",
+              "ML Engineer",
+              "Product Designer",
+              "Creative Developer",
+              "AI Developer",
+              "ML Engineer",
+              "Product Designer",
+              "Creative Developer",
+            ].map((word, index) => (
+              <span key={index}>{word}</span>
+            ))}
+          </div>
+        </div>
+
+        <div
+          ref={wrapRef}
+          className={`loading-wrap${clicked ? " loading-clicked" : ""}`}
+        >
+          <div className="loading-glow" aria-hidden="true" />
+
+          <div className={`loading-content2${loaded ? " is-done" : ""}`}>
+            <span ref={statusRef} className="loading-status">
+              Loading
+            </span>
+            <span ref={countRef} className="loading-count">
+              {String(percent).padStart(3, "0")}
+            </span>
+          </div>
+
+          <span className="loading-caret" aria-hidden="true" />
+        </div>
+      </div>
+    </>
   );
 };
 
@@ -248,9 +282,8 @@ export default Loading;
 
 /**
  * Progress for the character model.
- *
  * `clear()` jumps to done, `loaded()` ticks the remainder to 100 once the
- * GLTF has resolved. Both are kept because Scene.tsx drives them.
+ * GLTF resolves. Both kept because Scene.tsx drives them.
  */
 export const setProgress = (setLoading: (value: number) => void) => {
   let percent = 0;
